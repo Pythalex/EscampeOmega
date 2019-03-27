@@ -1,1 +1,0 @@
-java -cp target/EscampeOmega-1.0.jar jeux.dominos.PartieDominos
