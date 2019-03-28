@@ -10,22 +10,41 @@ import java.util.List;
 import java.lang.StringBuilder;
 
 public class PlateauEscampe implements PlateauJeu {
-
-    /*
-     * Pour coder un nouveau jeu... il faut au minimum coder - Une classe PlateauX
-     * pour représenter l'état du "plateau" de ce jeu. Cette classe doit fournir le
-     * code des méthodes de l'interface PlateauJeu qui permettent de caractériser
-     * les règles du jeu Une classe CoupX qui
-     */
-
     
+    private static Joueur jBlanc = new Joueur("Blanc");
+    private static Joueur jNoir = new Joueur("Noir");
+
     private int pions[];
     private int width = 6;
     private int height = 6;
     private int nb_pions = 12;
+    private int cases_pions[][] = {
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0}
+    };
+
+    private static final int licorne_blanche = 1;
+    private static final int licorne_noire = 6;
+    
+    public static Lisere SIMPLE = Lisere.SIMPLE;
+    public static Lisere DOUBLE = Lisere.DOUBLE;
+    public static Lisere TRIPLE = Lisere.TRIPLE;
+    private static Lisere cases_liseres[][] = {
+        {SIMPLE, DOUBLE, DOUBLE, TRIPLE, SIMPLE, DOUBLE},
+        {TRIPLE, SIMPLE, TRIPLE, SIMPLE, TRIPLE, DOUBLE},
+        {DOUBLE, TRIPLE, SIMPLE, DOUBLE, SIMPLE, TRIPLE},
+        {DOUBLE, SIMPLE, TRIPLE, DOUBLE, TRIPLE, SIMPLE},
+        {SIMPLE, TRIPLE, SIMPLE, TRIPLE, SIMPLE, DOUBLE},
+        {TRIPLE, DOUBLE, DOUBLE, SIMPLE, TRIPLE, DOUBLE}
+    };
 
     public PlateauEscampe() {
         pions = new int[24];
+        Point2D pos;
         for (int i = 0; i < nb_pions; i++){
             if (i < 7) {
                 pions[i * 2] = 1;
@@ -34,6 +53,8 @@ public class PlateauEscampe implements PlateauJeu {
                 pions[i * 2] = 6;
                 pions[i * 2 + 1] = i - 6;
             }
+            pos = getPionPos(i);
+            cases_pions[pos.y][pos.x] = i;
         }
     }
 
@@ -58,12 +79,14 @@ public class PlateauEscampe implements PlateauJeu {
         for (Point2D pos: positions){
             pions[pion * 2] = pos.x;
             pions[pion * 2 + 1] = pos.y;
+            cases_pions[pos.y][pos.x] = pion;
             pion++; 
         }
     }
 
     public PlateauEscampe(PlateauEscampe other){
         pions = other.pions.clone();
+        cases_pions = other.cases_pions.clone();
     }
 
     public ArrayList<CoupJeu> coupsPossibles(Joueur j) {
@@ -83,7 +106,58 @@ public class PlateauEscampe implements PlateauJeu {
     }
 
     public boolean coupValide(Joueur j, CoupJeu c) {
-        throw new UnsupportedOperationException("Il vous faut coder cette méthode");
+        CoupEscampe ce = (CoupEscampe)c;
+        int pion = ce.getPion();
+        int dx = ce.getDx();
+        int dy = ce.getDy();
+
+        Point2D from = getPionPos(pion);
+        Point2D to = from.translate(dx, dy);
+        // sort du terrain ?
+        if (to.x < 0 || to.x >= width || to.y < 0 || to.y >= height)
+            return false;
+
+        Lisere lfrom = cases_liseres[from.y][from.x];
+        boolean isjb = isJoueurBlanc(j);
+        boolean isjn = isJoueurNoir(j);
+        if (isjb){
+            if (pion > 6){
+                return false;
+            }
+        } else if (isjn){
+            if (pion < 7){
+                return false;
+            }
+        } else {
+            throw new IllegalArgumentException("Le joueur n'est pas une référence vers un joueur valide.");
+        }
+
+        boolean result;
+        switch (lfrom){
+            case SIMPLE:
+                if ((dx == 0 && dy == -1) || (dx == 0 && dy == -1) || (dx == 0 && dy == -1) || (dx == 0 && dy == -1)) {
+                    // Verification de collision
+                    int pion_en_xy = cases_pions[to.y][to.x];
+                    if (isjb && pion_en_xy != licorne_noire){
+                        result = false;
+                    } else if (isjn && pion_en_xy != licorne_blanche){
+                        result = false;
+                    } else {
+                        result = true;
+                    }
+                } else {
+                    // Mouvement impossible
+                    result = false;
+                }
+                break;
+            case DOUBLE:
+                break;
+            case TRIPLE:
+            default:
+                break;
+        }
+
+        return result;
     }
 
     public Point2D getPionPos(int index){
@@ -118,6 +192,14 @@ public class PlateauEscampe implements PlateauJeu {
             sb.append("+-----------------+\n");
         }
         return sb.toString();
+    }
+
+    public boolean isJoueurBlanc(Joueur other) {
+        return jBlanc.equals(other);
+    }
+
+    public boolean isJoueurNoir(Joueur other) {
+        return jNoir.equals(other);
     }
 
 }

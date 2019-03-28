@@ -15,6 +15,10 @@ public class Point2D {
         return "(" + x + "," + y + ")";
     }
 
+    public Point2D translate(int dx, int dy){
+        return new Point2D(x + dx, y + dy);
+    }
+
     @Override
     public boolean equals(Object other){
         if (other == null){
