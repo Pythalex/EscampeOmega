@@ -151,6 +151,7 @@ public class PlateauEscampe implements PlateauJeu {
                 }
                 break;
             case DOUBLE:
+                // test
                 break;
             case TRIPLE:
             default:
