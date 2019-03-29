@@ -11,8 +11,8 @@ import java.lang.StringBuilder;
 
 public class PlateauEscampe implements PlateauJeu {
     
-    private static Joueur jBlanc = new Joueur("Blanc");
-    private static Joueur jNoir = new Joueur("Noir");
+    public static Joueur jBlanc = new Joueur("Blanc");
+    public static Joueur jNoir = new Joueur("Noir");
 
     private int pions[];
     private int width = 6;
@@ -27,8 +27,9 @@ public class PlateauEscampe implements PlateauJeu {
         {0, 0, 0, 0, 0, 0}
     };
 
-    private static final int licorne_blanche = 1;
-    private static final int licorne_noire = 6;
+    private static final int licorne_blanche = 0;
+    private static final int licorne_noire = 5;
+    private static final int case_libre = 0;
     
     public static Lisere SIMPLE = Lisere.SIMPLE;
     public static Lisere DOUBLE = Lisere.DOUBLE;
@@ -46,11 +47,11 @@ public class PlateauEscampe implements PlateauJeu {
         pions = new int[24];
         Point2D pos;
         for (int i = 0; i < nb_pions; i++){
-            if (i < 7) {
-                pions[i * 2] = 1;
-                pions[i * 2 + 1] = i + 1;
+            if (i < 6) {
+                pions[i * 2] = 0;
+                pions[i * 2 + 1] = i;
             } else {
-                pions[i * 2] = 6;
+                pions[i * 2] = 5;
                 pions[i * 2 + 1] = i - 6;
             }
             pos = getPionPos(i);
@@ -77,9 +78,10 @@ public class PlateauEscampe implements PlateauJeu {
         pions = new int[nb_pions * 2];
         int pion = 0;
         for (Point2D pos: positions){
-            pions[pion * 2] = pos.x;
-            pions[pion * 2 + 1] = pos.y;
-            cases_pions[pos.y][pos.x] = pion;
+            pions[pion * 2] = pos.y;
+            pions[pion * 2 + 1] = pos.x;
+            if (pos.x != -1 && pos.y != -1)
+                cases_pions[pos.y][pos.x] = pion;
             pion++; 
         }
     }
@@ -132,37 +134,34 @@ public class PlateauEscampe implements PlateauJeu {
             throw new IllegalArgumentException("Le joueur n'est pas une référence vers un joueur valide.");
         }
 
-        boolean result;
         switch (lfrom){
             case SIMPLE:
-                if ((dx == 0 && dy == -1) || (dx == 0 && dy == -1) || (dx == 0 && dy == -1) || (dx == 0 && dy == -1)) {
+                if ((dx == 0 && dy == -1) || (dx == 0 && dy == 1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0)) {
                     // Verification de collision
-                    int pion_en_xy = cases_pions[to.y][to.x];
-                    if (isjb && pion_en_xy != licorne_noire){
-                        result = false;
-                    } else if (isjn && pion_en_xy != licorne_blanche){
-                        result = false;
+                    int case_cible = cases_pions[to.y][to.x];
+                    if (isjb && case_cible != case_libre){
+                        return (case_cible == licorne_noire);
+                    } else if (isjn && case_cible != case_libre){
+                        return (case_cible == licorne_blanche);
                     } else {
-                        result = true;
+                        // case libre
+                        return true;
                     }
                 } else {
                     // Mouvement impossible
-                    result = false;
+                    return false;
                 }
-                break;
             case DOUBLE:
                 // test
-                break;
+                throw new UnsupportedOperationException("Cas du liseré double non implémenté");
             case TRIPLE:
             default:
-                break;
+            throw new UnsupportedOperationException("Cas du liseré triple non implémenté");
         }
-
-        return result;
     }
 
     public Point2D getPionPos(int index){
-        return new Point2D(pions[index * 2 + 1] - 1, pions[index * 2] - 1);
+        return new Point2D(pions[index * 2 + 1], pions[index * 2]);
     }
 
     public String toString(){

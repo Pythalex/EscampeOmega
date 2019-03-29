@@ -20,20 +20,20 @@ public class PlateauEscampeTest {
 
         LinkedList<Point2D> positions = new LinkedList<Point2D>();
         positions.add(new Point2D(-1, -1)); // licorne blanche
-        positions.add(new Point2D(2, 1)); // paladin blanc
-        positions.add(new Point2D(3, 1)); // ..
-        positions.add(new Point2D(4, 1)); // ..
-        positions.add(new Point2D(5, 1)); // ..
-        positions.add(new Point2D(6, 1)); // ..
-        positions.add(new Point2D(1, 6)); // licorne noire
-        positions.add(new Point2D(2, 6)); // paladin noir
-        positions.add(new Point2D(3, 6)); // ..
-        positions.add(new Point2D(4, 6)); // ..
-        positions.add(new Point2D(5, 6)); // ..
-        positions.add(new Point2D(6, 6)); // ..
+        positions.add(new Point2D(1, 0)); // paladin blanc
+        positions.add(new Point2D(2, 0)); // ..
+        positions.add(new Point2D(3, 0)); // ..
+        positions.add(new Point2D(4, 0)); // ..
+        positions.add(new Point2D(5, 0)); // ..
+        positions.add(new Point2D(0, 5)); // licorne noire
+        positions.add(new Point2D(1, 5)); // paladin noir
+        positions.add(new Point2D(2, 5)); // ..
+        positions.add(new Point2D(3, 5)); // ..
+        positions.add(new Point2D(4, 5)); // ..
+        positions.add(new Point2D(5, 5)); // ..
         licorneBlanchePrise = new PlateauEscampe(positions);
 
-        positions.set(0, new Point2D(1, 1));
+        positions.set(0, new Point2D(0, 0));
         positions.set(6, new Point2D(-1, -1));
         licorneNoirePrise = new PlateauEscampe(positions);
     }
@@ -67,5 +67,11 @@ public class PlateauEscampeTest {
         Assert.assertFalse(plateau.finDePartie());
         Assert.assertTrue(licorneBlanchePrise.finDePartie());
         Assert.assertTrue(licorneNoirePrise.finDePartie());
+    }
+
+    @Test
+    public void testCoupValide() {
+        CoupEscampe avancelicorne = new CoupEscampe(0, 0, 1);
+        Assert.assertTrue(plateau.coupValide(plateau.jBlanc, avancelicorne));
     }
 }
