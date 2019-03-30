@@ -19,6 +19,14 @@ public class Point2D {
         return new Point2D(x + dx, y + dy);
     }
 
+    public Point2D add(Point2D other){
+        return new Point2D(this.x + other.x, this.y + other.y);
+    }
+
+    public Point2D sub(Point2D other){
+        return new Point2D(this.x - other.x, this.y - other.y);
+    }
+
     @Override
     public boolean equals(Object other){
         if (other == null){
@@ -32,6 +40,20 @@ public class Point2D {
             return this.x == o.x && this.y == o.y;
         }
         return false;
+    }
+
+    public int manhattan_distance(Point2D other){
+        int dx = 0;
+        int dy = 0;
+        while (other.x > this.x + dx)
+            dx++;
+        while (other.x < this.x + dx)
+            dx--;
+        while (other.y > this.y + dy)
+            dy++;
+        while (other.y < this.y + dy)
+            dy--;
+        return dx + dy;
     }
 
 }
