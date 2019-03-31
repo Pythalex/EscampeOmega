@@ -10,9 +10,12 @@ import jeux.escampe.EscampeBoard;
 
 public class PlateauEscampeTest {
 
-    public EscampeBoard plateau;
-    public EscampeBoard licorneBlanchePrise;
-    public EscampeBoard licorneNoirePrise;
+    public static EscampeBoard plateau;
+    public static EscampeBoard licorneBlanchePrise;
+    public static EscampeBoard licorneNoirePrise;
+
+    public static String placementsblancs = "C1/A1/B1/C2/D1/E1";
+    public static String placementsnoirs = "C6/A6/B6/C5/D6/E6";
 
     @Before
     public void init() {
@@ -40,7 +43,7 @@ public class PlateauEscampeTest {
 
     @Test
     public void testToString(){
-        plateau.toString().equals(
+        Assert.assertEquals(plateau.toString(),
             "+-----------------+\n"+
             "|LB|PB|PB|PB|PB|PB|\n"+
             "+-----------------+\n"+
@@ -66,7 +69,89 @@ public class PlateauEscampeTest {
 
     @Test
     public void testCoupValide() {
+        // mouvement valide
         Assert.assertTrue(plateau.isValidMove("A1-A2", "blanc"));
+
+        // Pas le bon joueur
         Assert.assertFalse(plateau.isValidMove("A1-A2", "noir"));
+        // Pas un mouvement d'une case depuis un liseré simple
+        Assert.assertFalse(plateau.isValidMove("A1-A3", "blanc"));
+        // Il y a déjà un pion sur la case B1
+        Assert.assertFalse(plateau.isValidMove("A1-B1", "blanc"));
+    }
+
+    @Test
+    public void testMove(){
+        plateau.play("A1-A2", "blanc");
+        Assert.assertEquals(plateau.toString(),
+            "+-----------------+\n"+
+            "|  |PB|PB|PB|PB|PB|\n"+
+            "+-----------------+\n"+
+            "|LB|  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|LN|PN|PN|PN|PN|PN|\n"+
+            "+-----------------+\n"
+        );
+
+        EscampeBoard copy = plateau.clone();
+        plateau.play("A1-A1", "blanc");
+        // nothing should happen (invalid move same case)
+        Assert.assertEquals(plateau, copy);
+
+        plateau.play("A1-A3", "blanc");
+        // nothing should happen (invalid move too long)
+        Assert.assertEquals(plateau, copy);
+
+        plateau.play("A1-A2", "noir");
+        // nothing should happen (invalid player)
+        Assert.assertEquals(plateau, copy);
+
+        plateau.play("A1-B1", "blanc");
+        // nothing should happen (invalid move pawn on case B1)
+        Assert.assertEquals(plateau, copy);
+    }
+
+    @Test
+    public void testPositioning(){
+        plateau.play(placementsblancs, "blanc");
+        plateau.play(placementsnoirs, "noir");
+        plateau.toString().equals(
+            "+-----------------+\n"+
+            "|PB|PB|LB|PB|PB|  |\n"+
+            "+-----------------+\n"+
+            "|  |  |PB|  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |PN|  |  |  |\n"+
+            "+-----------------+\n"+
+            "|PN|PN|LN|PN|PN|  |\n"+
+            "+-----------------+\n"
+        );
+
+        EscampeBoard copy = plateau.clone();
+        plateau.play("C1/A5/T5/F5/D4/B2", "noir");
+        // nothing should happen (invalid case T5)
+        Assert.assertEquals(plateau, copy);
+
+        plateau.play("A1/A1/B1/C1/D1/E1", "noir");
+        // nothing should happen (two A1)
+        Assert.assertEquals(plateau, copy);
+
+        plateau.play("C1/A5/F5/D4/B2/F4/B3", "noir");
+        // nothing should happen (not good format, too long)
+        Assert.assertEquals(plateau, copy);
+
+        plateau.play("C1/A5/F5/D4/B2", "noir");
+        // nothing should happen (not good format, too short)
+        Assert.assertEquals(plateau, copy);
     }
 }

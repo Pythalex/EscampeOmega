@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Positioning {
 
-    public ArrayList<Point2D> positions;
+    public ArrayList<Point2D> positions = new ArrayList<Point2D>(6);
 
     public static final String positioningRegex = CaseCoder.positioningRegex;
 

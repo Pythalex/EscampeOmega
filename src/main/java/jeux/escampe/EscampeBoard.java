@@ -8,6 +8,8 @@ import jeux.modele.Partiel;
 
 import jeux.escampe.exception.IllegalMove;
 
+import java.util.Arrays;
+
 public class EscampeBoard implements Partiel {
 
     public static String jBlanc = "Blanc";
@@ -92,7 +94,7 @@ public class EscampeBoard implements Partiel {
     }
 
     public boolean isValidMove(Move move, String player) {
-        Lisere lfrom = cases_liseres[move.from.x][move.from.x];
+        Lisere lfrom = cases_liseres[move.from.y][move.from.x];
         boolean isjb = isJoueurBlanc(player);
         boolean isjn = isJoueurNoir(player);
         if (isjb) {
@@ -237,13 +239,13 @@ public class EscampeBoard implements Partiel {
     }
 
     public EscampeBoard(EscampeBoard other) {
-        pions = other.pions.clone();
-        cases_pions = other.cases_pions.clone();
+        this.pions = other.pions.clone();
+        this.cases_pions = other.cases_pions.clone();
     }
 
-    public PlateauJeu copy() {
-        throw new UnsupportedOperationException();
-        return new EscampeBoard();
+    @Override
+    public EscampeBoard clone() {
+        return new EscampeBoard(this);
     }
 
     public boolean canMoveTo(int pion, Point2D from, Point2D to){
@@ -287,7 +289,7 @@ public class EscampeBoard implements Partiel {
         for (int i = 0; i < nb_pions; i++) {
             Point2D pos = getPionPos(i);
 
-            if (i == 1) {
+            if (i == 0) {
                 p[pos.y * width + pos.x] = "LB";
             } else if (i == 6) {
                 p[pos.y * width + pos.x] = "LN";
@@ -306,7 +308,7 @@ public class EscampeBoard implements Partiel {
                 String c = p[j * width + i];
                 sb.append((c == null ? "  " : c) + "|");
             }
-            sb.append("+-----------------+\n");
+            sb.append("\n+-----------------+\n");
         }
         return sb.toString();
     }
@@ -319,5 +321,16 @@ public class EscampeBoard implements Partiel {
     @Override
     public void saveToFile(String filename) {
         throw new UnsupportedOperationException("Non implémenté");
+    }
+
+    @Override
+    public boolean equals(Object other){
+        if (other instanceof EscampeBoard){
+            EscampeBoard o = (EscampeBoard) other;
+            return Arrays.equals(pions, o.pions) && 
+                Arrays.equals(cases_pions, o.cases_pions);
+        } else {
+            return false;
+        }
     }
 }
