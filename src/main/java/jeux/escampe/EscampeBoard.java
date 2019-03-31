@@ -1,6 +1,5 @@
 package jeux.escampe;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.lang.StringBuilder;
 
@@ -23,8 +22,8 @@ public class EscampeBoard implements Partiel {
             { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
 
     private static final int licorne_blanche = 0;
-    private static final int licorne_noire = 5;
-    private static final int case_libre = 0;
+    private static final int licorne_noire = 6;
+    private static final int case_libre = -1;
 
     public static Lisere SIMPLE = Lisere.SIMPLE;
     public static Lisere DOUBLE = Lisere.DOUBLE;
@@ -35,6 +34,10 @@ public class EscampeBoard implements Partiel {
             { TRIPLE, DOUBLE, DOUBLE, SIMPLE, TRIPLE, DOUBLE } };
 
     public EscampeBoard() {
+
+        for (int[] line: cases_pions)
+            Arrays.fill(line, -1);
+
         pions = new int[24];
         Point2D pos;
         for (int i = 0; i < nb_pions; i++) {
@@ -67,6 +70,9 @@ public class EscampeBoard implements Partiel {
             }
         }
 
+        for (int[] line: cases_pions)
+            Arrays.fill(line, -1);
+
         pions = new int[nb_pions * 2];
         int pion = 0;
         for (Point2D pos : positions) {
@@ -94,33 +100,50 @@ public class EscampeBoard implements Partiel {
     }
 
     public boolean isValidMove(Move move, String player) {
-        Lisere lfrom = cases_liseres[move.from.y][move.from.x];
+
+        if (move.pion == -1){
+            return false;
+        }
+
         boolean isjb = isJoueurBlanc(player);
         boolean isjn = isJoueurNoir(player);
+
         if (isjb) {
-            if (move.pion > 6) {
+            if (move.pion > 5) {
                 return false;
             }
         } else if (isjn) {
-            if (move.pion < 7) {
+            if (move.pion < 6) {
                 return false;
             }
         } else {
             throw new IllegalArgumentException("'player' (" + player + ") n'est pas une valeur valide.");
         }
 
-        int dx = move.dx;
-        int dy = move.dy;
-        switch (lfrom) {
+        // test liseré
+        Lisere lfrom = cases_liseres[move.from.y][move.from.x];
+        Point2D d = move.to.sub(move.from);
+
+        switch (lfrom){
             case SIMPLE:
-                return canMoveTo(move.pion, move.from, move.to);
+                if (Math.abs(d.x) + Math.abs(d.y) != 1){
+                    return false;
+                }
+                break;
             case DOUBLE:
-                // test
-                throw new UnsupportedOperationException("Cas du liseré double non implémenté");
+                if (Math.abs(d.x) + Math.abs(d.y) != 2){
+                    return false;
+                }
+                break;
             case TRIPLE:
             default:
-                throw new UnsupportedOperationException("Cas du liseré triple non implémenté");
+                if (Math.abs(d.x) + Math.abs(d.y) != 3){
+                    return false;
+                }
+                break;
         }
+
+        return canMoveTo(move.pion, move.from, move.to);
     }
 
     public boolean isValidMove(Positioning pos, String player) {
@@ -185,7 +208,7 @@ public class EscampeBoard implements Partiel {
     }
 
     public void move(Move mv){
-        cases_pions[mv.from.y][mv.from.x] = 0;
+        cases_pions[mv.from.y][mv.from.x] = case_libre;
         place(mv.pion, mv.to.x, mv.to.y);
     }
 
@@ -195,11 +218,11 @@ public class EscampeBoard implements Partiel {
         if (pos.positions.get(0).y == 0 || pos.positions.get(0).y == 1) {
              for (int j = 0; j < 2; j++)
                 for (int i = 0; i < width; i++)
-                    cases_pions[j][i] = 0;
+                    cases_pions[j][i] = case_libre;
         } else {
             for (int j = 4; j < 6; j++)
                 for (int i = 0; i < width; i++)
-                    cases_pions[j][i] = 0;
+                    cases_pions[j][i] = case_libre;
         }
         for (int i = 0; i < pos.positions.size(); i++){
             p = pos.positions.get(i);
@@ -226,7 +249,7 @@ public class EscampeBoard implements Partiel {
     }
 
     public Move interpretMove(String move){
-        return new Move(move);
+        return new Move(move, cases_pions);
     }
 
     public Positioning interpretPositioning(String positioning){
@@ -249,14 +272,38 @@ public class EscampeBoard implements Partiel {
     }
 
     public boolean canMoveTo(int pion, Point2D from, Point2D to){
+
+        if (from.equals(to)){
+            return true;
+        }
+
         Point2D d = to.sub(from);
-        int dx = d.x;
-        int dy = d.y;
+
+        boolean found = false;
+        if (d.x > 0 && !found){
+            found = canMoveTo(pion, new Point2D(from.x + 1, from.y), to) && canMoveTo(pion, from.x, from.y, 1, 0);
+        }
+        else if (d.x < 0 && !found){
+            found = canMoveTo(pion, new Point2D(from.x - 1, from.y), to) && canMoveTo(pion, from.x, from.y, -1, 0);
+        }
+        if (d.y > 0 && !found){
+            found = canMoveTo(pion, new Point2D(from.x, from.y + 1), to) && canMoveTo(pion, from.x, from.y, 0, 1);
+        }
+        else if (d.y < 0 && !found){
+            found = canMoveTo(pion, new Point2D(from.x, from.y - 1), to) && canMoveTo(pion, from.x, from.y, 0, -1);
+        }
+        return found;
+    }
+
+    public boolean canMoveTo(int pion, int x, int y, int dx, int dy){
+        int tox = x+dx;
+        int toy = y+dy;
+
         boolean pion_blanc = pion < 6;
         boolean pion_noir = !pion_blanc;
         if ((dx == 0 && dy == -1) || (dx == 0 && dy == 1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0)) {
             // Verification de collision
-            int case_cible = cases_pions[to.y][to.x];
+            int case_cible = cases_pions[toy][tox];
             if (pion_blanc && case_cible != case_libre) {
                 return (case_cible == licorne_noire);
             } else if (pion_noir && case_cible != case_libre) {
@@ -315,11 +362,13 @@ public class EscampeBoard implements Partiel {
 
     @Override
     public void setFromFile(String filename) {
+        // TODO : setfromfile
         throw new UnsupportedOperationException("Non implémenté");
     }
 
     @Override
     public void saveToFile(String filename) {
+        // TODO : savetofile
         throw new UnsupportedOperationException("Non implémenté");
     }
 

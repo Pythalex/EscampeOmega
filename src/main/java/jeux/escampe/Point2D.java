@@ -56,4 +56,9 @@ public class Point2D {
         return dx + dy;
     }
 
+    @Override
+    public Point2D clone(){
+        return new Point2D(x, y);
+    }
+
 }

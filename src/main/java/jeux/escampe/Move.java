@@ -21,7 +21,7 @@ public class Move{
         dy = d.y;
     }
 
-    public Move(String move){
+    public Move(String move, int[][] cases_pions){
         String fromto[] = move.split("[-]");
         if (fromto.length == 2){
             from = CaseCoder.decode(fromto[0]);
@@ -29,6 +29,9 @@ public class Move{
             Point2D d = to.sub(from);
             dx = d.x;
             dy = d.y;
+
+            // determine le pion
+            pion = cases_pions[from.y][from.x];
         } else {
             throw new IllegalArgumentException("'move' argument is not of the format [A-F][1-6][-][A-F][1-6]");
         }

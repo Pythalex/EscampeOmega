@@ -81,6 +81,40 @@ public class PlateauEscampeTest {
     }
 
     @Test
+    public void testCanMoveTo(){
+        Point2D from = new Point2D(0, 0);
+        Point2D to = new Point2D(0, 1);
+        Assert.assertTrue(plateau.canMoveTo(0, from, to));
+
+        from = new Point2D(0, 5);
+        to = new Point2D(0, 2);
+        Assert.assertTrue(plateau.canMoveTo(6, from, to));
+
+        // collision avec paladins
+        to = new Point2D(1, 5); 
+        Assert.assertFalse(plateau.canMoveTo(6, from, to));
+        from = new Point2D(0, 0);
+        to = new Point2D(1, 0);
+        Assert.assertFalse(plateau.canMoveTo(0, from, to));
+
+        // collision avec licornes alliées
+        from = new Point2D(1, 0);
+        to = new Point2D(0, 0);
+        Assert.assertFalse(plateau.canMoveTo(1, from, to));
+        from = new Point2D(1, 5);
+        to = new Point2D(0, 5);
+        Assert.assertFalse(plateau.canMoveTo(7, from, to));
+
+        // collision avec licornes ennemies
+        from = new Point2D(1, 0);
+        to = new Point2D(0, 0);
+        Assert.assertTrue(plateau.canMoveTo(7, from, to));
+        from = new Point2D(1, 5);
+        to = new Point2D(0, 5);
+        Assert.assertTrue(plateau.canMoveTo(1, from, to));
+    }
+
+    @Test
     public void testMove(){
         plateau.play("A1-A2", "blanc");
         Assert.assertEquals(plateau.toString(),
@@ -96,6 +130,74 @@ public class PlateauEscampeTest {
             "|  |  |  |  |  |  |\n"+
             "+-----------------+\n"+
             "|LN|PN|PN|PN|PN|PN|\n"+
+            "+-----------------+\n"
+        );
+
+        plateau.play("A6-A3", "noir");
+        Assert.assertEquals(plateau.toString(),
+            "+-----------------+\n"+
+            "|  |PB|PB|PB|PB|PB|\n"+
+            "+-----------------+\n"+
+            "|LB|  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|LN|  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |PN|PN|PN|PN|PN|\n"+
+            "+-----------------+\n"
+        );
+
+        plateau.play("B1-C2", "blanc");
+        Assert.assertEquals(plateau.toString(),
+            "+-----------------+\n"+
+            "|  |  |PB|PB|PB|PB|\n"+
+            "+-----------------+\n"+
+            "|LB|  |PB|  |  |  |\n"+
+            "+-----------------+\n"+
+            "|LN|  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |PN|PN|PN|PN|PN|\n"+
+            "+-----------------+\n"
+        );
+
+        plateau.play("E6-C5", "noir");
+        Assert.assertEquals(plateau.toString(),
+            "+-----------------+\n"+
+            "|  |  |PB|PB|PB|PB|\n"+
+            "+-----------------+\n"+
+            "|LB|  |PB|  |  |  |\n"+
+            "+-----------------+\n"+
+            "|LN|  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |PN|  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |PN|PN|PN|  |PN|\n"+
+            "+-----------------+\n"
+        );
+
+        plateau.play("E1-E2", "blanc");
+        Assert.assertEquals(plateau.toString(),
+            "+-----------------+\n"+
+            "|  |  |PB|PB|  |PB|\n"+
+            "+-----------------+\n"+
+            "|LB|  |PB|  |PB|  |\n"+
+            "+-----------------+\n"+
+            "|LN|  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |  |  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |  |PN|  |  |  |\n"+
+            "+-----------------+\n"+
+            "|  |PN|PN|PN|  |PN|\n"+
             "+-----------------+\n"
         );
 
