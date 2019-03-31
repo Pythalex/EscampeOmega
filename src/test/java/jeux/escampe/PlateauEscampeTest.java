@@ -1,6 +1,9 @@
 package jeux.escampe;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -255,6 +258,36 @@ public class PlateauEscampeTest {
         plateau.play("C1/A5/F5/D4/B2", "noir");
         // nothing should happen (not good format, too short)
         Assert.assertEquals(plateau, copy);
+    }
+
+    @Test
+    public void testCoupsPossibles(){
+        String[] rien = {"E"};
+        Assert.assertArrayEquals(licorneBlanchePrise.possiblesMoves("blanc"), rien);
+        Assert.assertArrayEquals(licorneBlanchePrise.possiblesMoves("noir"), rien);
+        Assert.assertArrayEquals(licorneNoirePrise.possiblesMoves("blanc"), rien);
+        Assert.assertArrayEquals(licorneNoirePrise.possiblesMoves("blanc"), rien);
+
+        String[] moves = {"A1-A2", "B1-B3", "B1-A2", "B1-C2", "C1-C3", "C1-B2", "C1-D2", "D1-D4", "D1-B2", "D1-F2", "D1-C3", "D1-E3", "E1-E2", "F1-F3", "F1-E2"};
+        Assert.assertTrue(sameContent(plateau.possiblesMoves("blanc"), moves));
+    }
+
+    public static boolean sameContent(String[] a1, String[] a2){
+        List<String> l1 = Arrays.asList(a1);
+        List<String> l2 = Arrays.asList(a2);
+
+        for (String s: l1){
+            if (!l2.contains(s)){
+                return false;
+            }
+        }
+        for (String s: l2){
+            if (!l1.contains(s)){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Test

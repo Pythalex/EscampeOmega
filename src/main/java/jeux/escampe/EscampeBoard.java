@@ -13,6 +13,7 @@ import jeux.modele.Partiel;
 
 import jeux.escampe.exception.IllegalMove;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EscampeBoard implements Partiel {
@@ -38,6 +39,8 @@ public class EscampeBoard implements Partiel {
             { TRIPLE, SIMPLE, TRIPLE, SIMPLE, TRIPLE, DOUBLE }, { DOUBLE, TRIPLE, SIMPLE, DOUBLE, SIMPLE, TRIPLE },
             { DOUBLE, SIMPLE, TRIPLE, DOUBLE, TRIPLE, SIMPLE }, { SIMPLE, TRIPLE, SIMPLE, TRIPLE, SIMPLE, DOUBLE },
             { TRIPLE, DOUBLE, DOUBLE, SIMPLE, TRIPLE, DOUBLE } };
+
+    private Lisere derniereaction = null;
 
     public EscampeBoard() {
 
@@ -179,7 +182,137 @@ public class EscampeBoard implements Partiel {
 
     @Override
     public String[] possiblesMoves(String player) {
-        throw new UnsupportedOperationException("Non implémenté");
+
+        if (gameOver()) {
+            String[] res = {"E"};
+            return res;
+        }
+
+        boolean isjb = isJoueurBlanc(player);
+        ArrayList<String> res = new ArrayList<>();
+        String move;
+        for (int i = licorne_blanche; i < licorne_noire; i++){
+            int y = pions[i*2];
+            int x = pions[i*2+1];
+            if ((i < licorne_noire && isjb || i >= licorne_noire) && cases_liseres[y][x] == derniereaction || derniereaction == null){
+                Lisere from = cases_liseres[y][x];
+                String base = CaseCoder.encode(x, y) + "-";
+                switch (from){
+                    case SIMPLE:
+                        try {
+                            move = base + CaseCoder.encode(x + 1, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 1, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y + 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y - 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        break;
+                    case DOUBLE:
+                        try {
+                            move = base + CaseCoder.encode(x + 2, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 2, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y + 2);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y - 2);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 1, y + 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 1, y - 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 1, y + 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 1, y - 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        break;
+                    case TRIPLE:
+                        try {
+                            move = base + CaseCoder.encode(x, y - 3);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 1, y - 2);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 2, y - 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 3, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 2, y + 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x + 1, y + 2);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y + 3);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 1, y + 2);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 2, y + 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 3, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 2, y - 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 1, y - 2);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        break;
+                }
+            }   
+        }
+
+        if (res.size() == 0)
+            res.add("E");
+
+        String [] output = new String[res.size()];
+        for (int i = 0; i < output.length; i++){
+            output[i] = res.get(i);
+        }
+
+        return output;
     }
 
     @Override
@@ -190,6 +323,7 @@ public class EscampeBoard implements Partiel {
                     Move mv = interpretMove(move);
                     if (isValidMove(mv, player)){
                         move(mv);
+                        derniereaction = cases_liseres[mv.to.y][mv.to.x];
                     } else {
                         throw new IllegalMove("'move' " + move + " is invalid.");
                     }
@@ -203,7 +337,7 @@ public class EscampeBoard implements Partiel {
                     }
                     break;
                 case Skip:
-                    // do nothing
+                    derniereaction = null;
                     break;
                 default:
                     throw new IllegalArgumentException("'move' " + move + " doesn't match with any known move type.");
