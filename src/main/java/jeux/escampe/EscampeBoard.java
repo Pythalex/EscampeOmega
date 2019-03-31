@@ -1,6 +1,12 @@
 package jeux.escampe;
 
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.StringBuilder;
 
 import jeux.modele.Partiel;
@@ -362,24 +368,173 @@ public class EscampeBoard implements Partiel {
 
     @Override
     public void setFromFile(String filename) {
-        // TODO : setfromfile
-        throw new UnsupportedOperationException("Non implémenté");
+        File f = new File(filename);
+        String lines[] = new String[6];
+        int i = 0;
+        
+        String formaterror = "Le fichier de sauvegarde " + filename + " n'est pas bien formaté ou est corrompu. ";
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if (line.matches("[%].*")){
+                    // skip comment
+                } else {
+                    line = line.replaceAll("\\s?[0-6][0-6]\\s?", "");
+                    if (line.matches("[bBnN-][bBnN-][bBnN-][bBnN-][bBnN-][bBnN-]")){
+                        try {
+                            lines[i] = line;
+                        } catch (IndexOutOfBoundsException e){
+                            reader.close();
+                            System.err.println(formaterror + "(Ligne trop longue)");
+                            return;
+                        }
+                    } else {
+                        reader.close();
+                        System.err.println(formaterror);
+                        return;
+                    }
+                    i++;
+                }
+            }
+            reader.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        int pb = 1;
+        int pn = 7;
+        boolean lb = false;
+        boolean ln = false;
+
+        // On met les licornes hors du terrain par defaut car elles ne sont pas représentées dans le fichier
+        pions[licorne_blanche * 2] = -1;
+        pions[licorne_blanche * 2 + 1] = -1;
+        pions[licorne_noire * 2] = -1;
+        pions[licorne_noire * 2 + 1] = -1;
+
+        for (int j = 0; j < height; j++){
+            for (i = 0; i < width; i++){
+                switch (lines[j].charAt(i)){
+                    case 'B':
+                        if (!lb) {
+                            cases_pions[j][i] = licorne_blanche;
+                            pions[licorne_blanche * 2] = j;
+                            pions[licorne_blanche * 2 + 1] = i;
+                            lb = true;
+                        } else {
+                            System.err.println(formaterror + "(Plusieurs licornes blanches)");
+                            return;
+                        }
+                        break;
+                    case 'b':
+                        if (pb < 6){
+                            cases_pions[j][i] = pb;
+                            pions[pb * 2] = j;
+                            pions[pb * 2 + 1] = i;
+                            pb++;
+                        } else {
+                            System.err.println(formaterror + "(Trop de paladins blancs)");
+                            return;
+                        }
+                        break;
+                    case 'N':
+                        if (!ln) {
+                            cases_pions[j][i] = licorne_noire;
+                            pions[licorne_noire * 2] = j;
+                            pions[licorne_noire * 2 + 1] = i;
+                            ln = true;
+                        } else {
+                            System.err.println(formaterror + "(Plusieurs licornes noires)");
+                            return;
+                        }
+                        break;
+                    case 'n':
+                        if (pn < 12){
+                            cases_pions[j][i] = pn;
+                            pions[pn * 2] = j;
+                            pions[pn * 2 + 1] = i;
+                            pn++;
+                        } else {
+                            System.err.println(formaterror + "(Trop de paladins noirs)");
+                            return;
+                        }
+                        break;
+                    case '-':
+                    default:
+                        cases_pions[j][i] = case_libre;
+                }
+            }
+        }
+
+        // on vérifie qu'il y a assez de paladins
+        if (pb < 6){
+            System.err.println(formaterror + "(Pas assez de paladins blancs)");
+            return;
+        } else if (pn < 12){
+            System.err.println(formaterror + "(Pas assez de paladins noirs)");
+            return;
+        }
+        System.err.println("Plateau chargé depuis " + filename);
     }
 
     @Override
     public void saveToFile(String filename) {
-        // TODO : savetofile
-        throw new UnsupportedOperationException("Non implémenté");
+        File of = new File(filename);
+        int pion;
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(of));
+            
+            // write file
+            writer.write("%  ABCDEF   \n");
+            for (int j = 0; j < height; j++){
+                writer.write("0" + (j+1) + " ");
+                for (int i = 0; i < width; i++){
+                    pion = cases_pions[j][i];
+                    if (pion == -1){
+                        writer.write("-");
+                    } else if (pion == licorne_blanche){
+                        writer.write("B");
+                    } else if (pion < licorne_noire){
+                        writer.write("b");
+                    } else if (pion == licorne_noire){
+                        writer.write("N");
+                    } else {
+                        writer.write("n");
+                    }
+                }
+                writer.write(" 0" + (j+1) + "\n");
+            }
+            writer.write("%  ABCDEF   ");
+
+            writer.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
     public boolean equals(Object other){
         if (other instanceof EscampeBoard){
             EscampeBoard o = (EscampeBoard) other;
-            return Arrays.equals(pions, o.pions) && 
-                Arrays.equals(cases_pions, o.cases_pions);
+            if (Arrays.equals(pions, o.pions)){
+                for (int i = 0; i < cases_pions.length; i++){
+                    if (!Arrays.equals(cases_pions[i], o.cases_pions[i])){
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }   
         } else {
             return false;
         }
+    }
+
+    public static void main(String[] args){
+        // voir PlateauEscampeTest.java
+        System.err.println("voir PlateauEscampeTest.java");
     }
 }

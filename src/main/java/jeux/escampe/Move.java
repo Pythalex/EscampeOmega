@@ -1,7 +1,5 @@
 package jeux.escampe;
 
-import java.util.HashMap;
-
 public class Move{
 
     public int pion;

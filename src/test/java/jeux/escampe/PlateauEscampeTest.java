@@ -256,4 +256,23 @@ public class PlateauEscampeTest {
         // nothing should happen (not good format, too short)
         Assert.assertEquals(plateau, copy);
     }
+
+    @Test
+    public void testFile(){
+        licorneBlanchePrise.saveToFile("save/blancheprise.game");
+        EscampeBoard p = new EscampeBoard();
+        p.setFromFile("save/blancheprise.game");
+
+        Assert.assertEquals(licorneBlanchePrise, p);
+
+        licorneNoirePrise.saveToFile("save/noireprise.game");
+        p.setFromFile("save/noireprise.game");
+
+        Assert.assertEquals(licorneNoirePrise, p);
+
+        plateau.saveToFile("save/default.game");
+        p.setFromFile("save/default.game");
+
+        Assert.assertEquals(plateau, p);
+    }
 }
