@@ -1,0 +1,1 @@
+java -cp target\classes\ jeux.escampe.server.ClientJeu jeux.escampe.joueur.JoueurAleatoire localhost 1234 
