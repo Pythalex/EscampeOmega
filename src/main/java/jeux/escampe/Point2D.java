@@ -53,7 +53,7 @@ public class Point2D {
             dy++;
         while (other.y < this.y + dy)
             dy--;
-        return dx + dy;
+        return Math.abs(dx) + Math.abs(dy);
     }
 
     @Override

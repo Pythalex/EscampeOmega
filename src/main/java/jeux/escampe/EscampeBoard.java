@@ -145,13 +145,14 @@ public class EscampeBoard implements PlateauClonable {
                 break;
             case TRIPLE:
             default:
-                if (Math.abs(d.x) + Math.abs(d.y) != 3){
+                int distance = Math.abs(d.x) + Math.abs(d.y);
+                if (distance != 3 && distance != 1){
                     return false;
                 }
                 break;
         }
 
-        return canMoveTo(move.pion, move.from, move.to);
+        return canMoveTo(move.pion, move.to);
     }
 
     public boolean isValidMove(Positioning pos, String player) {
@@ -179,7 +180,7 @@ public class EscampeBoard implements PlateauClonable {
         }
     }
 
-    // TODO : prendre en compte les placements en début de jeu
+    // TODO : corriger les erreurs de coups non détectés
     @Override
     public String[] possiblesMoves(String player) {
 
@@ -195,7 +196,7 @@ public class EscampeBoard implements PlateauClonable {
         boolean isjb = isJoueurBlanc(player);
         ArrayList<String> res = new ArrayList<>();
         String move;
-        for (int i = licorne_blanche; i < licorne_noire; i++){
+        for (int i = licorne_blanche; i < 12; i++){
             int y = pions[i*2];
             int x = pions[i*2+1];
             if ((i < licorne_noire && isjb || i >= licorne_noire) && cases_liseres[y][x] == derniereaction || derniereaction == null){
@@ -460,28 +461,98 @@ public class EscampeBoard implements PlateauClonable {
         return new EscampeBoard(this);
     }
 
-    public boolean canMoveTo(int pion, Point2D from, Point2D to){
+    // TODO : prendre en compte les mouvements triple tels que gauche bas droite
+    public boolean canMoveTo(int pion, Point2D to){
 
-        if (from.equals(to)){
-            return true;
+        Point2D from = new Point2D(pions[pion*2+1], pions[pion*2]);
+
+        if (from.x < 0 || from.x >= width || from.y < 0 || from.y >= height ||
+            to.x < 0 || to.x >= width || to.y < 0 || to.y >= height)
+            return false;
+
+        ArrayList<Point2D> walkedon = new ArrayList<>(3);
+
+        boolean jb = pion < licorne_noire;
+
+        Lisere lfrom = cases_liseres[from.y][from.x];
+        switch (lfrom){
+            case SIMPLE:
+                return find(pion, from, to, walkedon, 1, jb);
+            case DOUBLE:
+                return find(pion, from, to, walkedon, 2, jb);
+            case TRIPLE:
+            default:
+                return find(pion, from, to, walkedon, 3, jb);
         }
 
-        Point2D d = to.sub(from);
+        // Point2D d = to.sub(from);
 
-        boolean found = false;
-        if (d.x > 0 && !found){
-            found = canMoveTo(pion, new Point2D(from.x + 1, from.y), to) && canMoveTo(pion, from.x, from.y, 1, 0);
+        // boolean found = false;
+        // if (d.x > 0 && !found){
+        //     found = canMoveTo(pion, new Point2D(from.x + 1, from.y), to) && canMoveTo(pion, from.x, from.y, 1, 0);
+        // }
+        // else if (d.x < 0 && !found){
+        //     found = canMoveTo(pion, new Point2D(from.x - 1, from.y), to) && canMoveTo(pion, from.x, from.y, -1, 0);
+        // }
+        // if (d.y > 0 && !found){
+        //     found = canMoveTo(pion, new Point2D(from.x, from.y + 1), to) && canMoveTo(pion, from.x, from.y, 0, 1);
+        // }
+        // else if (d.y < 0 && !found){
+        //     found = canMoveTo(pion, new Point2D(from.x, from.y - 1), to) && canMoveTo(pion, from.x, from.y, 0, -1);
+        // }
+        // return found;
+    }
+
+    public boolean find(int pion, Point2D from, Point2D to, List<Point2D> walkedon, int count, boolean jb){
+
+        walkedon.add(from);
+        if (count == 0 && from.equals(to)){
+            if (cases_pions[from.y][from.x] != case_libre){
+                if (cases_pions[from.y][from.x] == licorne_noire && jb) {
+                    return true;
+                }
+                else if (cases_pions[from.y][from.x] == licorne_blanche && !jb) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
         }
-        else if (d.x < 0 && !found){
-            found = canMoveTo(pion, new Point2D(from.x - 1, from.y), to) && canMoveTo(pion, from.x, from.y, -1, 0);
+        else if (from.manhattan_distance(to) > count){
+            return false;
         }
-        if (d.y > 0 && !found){
-            found = canMoveTo(pion, new Point2D(from.x, from.y + 1), to) && canMoveTo(pion, from.x, from.y, 0, 1);
+        else {
+
+            // cas == pion -> on a pas encore bougé
+            if (cases_pions[from.y][from.x] != case_libre && cases_pions[from.y][from.x] != pion){
+                return false;
+            }
+
+            Point2D nexthop = new Point2D(from.x + 1, from.y);
+            if (from.x + 1 < width && !walkedon.contains(nexthop)){
+                if (find(pion, nexthop, to, walkedon, count - 1, jb))
+                    return true;
+            }
+            nexthop = new Point2D(from.x - 1, from.y);
+            if (from.x - 1 >= 0 && !walkedon.contains(nexthop)){
+                if (find(pion, nexthop, to, walkedon, count - 1, jb))
+                    return true;
+            }
+            nexthop = new Point2D(from.x, from.y + 1);
+            if (from.y + 1 < height && !walkedon.contains(nexthop)){
+                if (find(pion, nexthop, to, walkedon, count - 1, jb))
+                    return true;
+            }
+            nexthop = new Point2D(from.x, from.y - 1);
+            if (from.y - 1 >= 0 && !walkedon.contains(nexthop)){
+                if (find(pion, nexthop, to, walkedon, count - 1, jb))
+                    return true;
+            }
+            return false;
         }
-        else if (d.y < 0 && !found){
-            found = canMoveTo(pion, new Point2D(from.x, from.y - 1), to) && canMoveTo(pion, from.x, from.y, 0, -1);
-        }
-        return found;
     }
 
     public boolean canMoveTo(int pion, int x, int y, int dx, int dy){

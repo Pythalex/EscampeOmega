@@ -77,36 +77,51 @@ public class PlateauEscampeTest {
 
     @Test
     public void testCanMoveTo(){
-        Point2D from = new Point2D(0, 0);
+        // mouvements simple
         Point2D to = new Point2D(0, 1);
-        Assert.assertTrue(plateau.canMoveTo(0, from, to));
+        Assert.assertTrue(plateau.canMoveTo(0, to));
 
-        from = new Point2D(0, 5);
-        to = new Point2D(0, 2);
-        Assert.assertTrue(plateau.canMoveTo(6, from, to));
+        // mouvements double
+        to = new Point2D(1, 3);
+        plateau.arbitraryplace(2, 0, 2);
+        Assert.assertTrue(plateau.canMoveTo(2, to));
+        to = new Point2D(1, 4);
+        Assert.assertFalse(plateau.canMoveTo(6, to));
+        to = new Point2D(2, 3);
+        Assert.assertFalse(plateau.canMoveTo(6, to));
+
+        // mouvements triple
+        to = new Point2D(1, 3);
+        plateau.arbitraryplace(2, 1, 2);
+        Assert.assertTrue(plateau.canMoveTo(6, to));
+        to = new Point2D(1, 2);
+        Assert.assertFalse(plateau.canMoveTo(6, to));
+        to = new Point2D(0, 3);
+        Assert.assertFalse(plateau.canMoveTo(6, to));
 
         // collision avec paladins
         to = new Point2D(1, 5); 
-        Assert.assertFalse(plateau.canMoveTo(6, from, to));
-        from = new Point2D(0, 0);
+        Assert.assertFalse(plateau.canMoveTo(6, to));
         to = new Point2D(1, 0);
-        Assert.assertFalse(plateau.canMoveTo(0, from, to));
+        Assert.assertFalse(plateau.canMoveTo(0, to));
 
         // collision avec licornes alliées
-        from = new Point2D(1, 0);
         to = new Point2D(0, 0);
-        Assert.assertFalse(plateau.canMoveTo(1, from, to));
-        from = new Point2D(1, 5);
+        Assert.assertFalse(plateau.canMoveTo(1, to));
         to = new Point2D(0, 5);
-        Assert.assertFalse(plateau.canMoveTo(7, from, to));
+        Assert.assertFalse(plateau.canMoveTo(7, to));
+    
+        // collision avec licorne ennemie
+        to = new Point2D(2, 2);
+        plateau.arbitraryplace(1, 2, 2);
+        plateau.arbitraryplace(7, 0, 2);
+        Assert.assertTrue(plateau.canMoveTo(7, to));
 
-        // collision avec licornes ennemies
-        from = new Point2D(1, 0);
-        to = new Point2D(0, 0);
-        Assert.assertTrue(plateau.canMoveTo(7, from, to));
-        from = new Point2D(1, 5);
-        to = new Point2D(0, 5);
-        Assert.assertTrue(plateau.canMoveTo(1, from, to));
+        plateau.arbitraryplace(1, 0, 0);
+        plateau.arbitraryplace(7, 0, 5);
+        plateau.arbitraryplace(6, 2, 2);
+        plateau.arbitraryplace(2, 0, 2);
+        Assert.assertTrue(plateau.canMoveTo(2, to));
     }
 
     @Test
