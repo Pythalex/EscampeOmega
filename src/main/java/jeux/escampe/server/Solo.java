@@ -2,9 +2,10 @@ package jeux.escampe.server;
 
 import java.util.Date;
 
-//import javax.swing.JFrame;
+import javax.swing.JFrame;
 
 import jeux.modele.IJoueur;
+import jeux.escampe.gui.Applet;
 import jeux.escampe.joueur.*;
 
 /**
@@ -32,12 +33,12 @@ public class Solo {
     
     private static int nbCoups = 0;
     
-    /*// Par défaut, on a une applet graphique
+    /*// Par défaut, on a une applet graphique*/
     static boolean APPLETGRAPHIQUE = true;
 
     // applet game viewer
     static private Applet vueDuJeu;
-    static private JFrame f = null;*/
+    static private JFrame f = null;
     
     
     /**
@@ -52,7 +53,7 @@ public class Solo {
     private static IJoueur getDefaultPlayer(String s) {
     	System.out.println(s + " : defaultPlayer");
     	// vous devez faire qq chose comme return new MonMeilleurJoueur();
-    	return new Metroid();
+    	return new JoueurAleatoire();
     }
     
     /**
@@ -139,17 +140,17 @@ public class Solo {
      * @param args
      */
     public static void main(String args[]) {
-    	/*// S'il le faut, on initialise l'applet graphique
-    	if (APPLETGRAPHIQUE) {
-    		f = new JFrame("Vue du jeu");
-    		vueDuJeu = new Applet();
-    		vueDuJeu.buildUI(f.getContentPane());
-    		f.setSize(vueDuJeu.getDimension());
-    		vueDuJeu.setMyFrame(f);
-    		f.setVisible(true);
-    		vueDuJeu.addBoard("Départ ", plateau);
-    		vueDuJeu.update(f.getGraphics(), f.getInsets());
-    	}*/
+    	// S'il le faut, on initialise l'applet graphique
+    	// if (APPLETGRAPHIQUE) {
+    	// 	f = new JFrame("Vue du jeu");
+    	// 	vueDuJeu = new Applet();
+    	// 	vueDuJeu.buildUI(f.getContentPane());
+    	// 	f.setSize(vueDuJeu.getDimension());
+    	// 	vueDuJeu.setMyFrame(f);
+    	// 	f.setVisible(true);
+    	// 	vueDuJeu.addBoard("Départ ", );
+    	// 	vueDuJeu.update(f.getGraphics(), f.getInsets());
+    	// }
     	
     	System.out.println("Partie solo ...");
     	
