@@ -22,25 +22,18 @@ public class PlateauEscampeTest {
     @Before
     public void init() {
         plateau = new EscampeBoard();
+        plateau.play("A1/B1/C1/D1/E1/F1", "blanc");
+        plateau.play("A6/B6/C6/D6/E6/F6", "noir");
 
-        LinkedList<Point2D> positions = new LinkedList<Point2D>();
-        positions.add(new Point2D(-1, -1)); // licorne blanche
-        positions.add(new Point2D(1, 0)); // paladin blanc
-        positions.add(new Point2D(2, 0)); // ..
-        positions.add(new Point2D(3, 0)); // ..
-        positions.add(new Point2D(4, 0)); // ..
-        positions.add(new Point2D(5, 0)); // ..
-        positions.add(new Point2D(0, 5)); // licorne noire
-        positions.add(new Point2D(1, 5)); // paladin noir
-        positions.add(new Point2D(2, 5)); // ..
-        positions.add(new Point2D(3, 5)); // ..
-        positions.add(new Point2D(4, 5)); // ..
-        positions.add(new Point2D(5, 5)); // ..
-        licorneBlanchePrise = new EscampeBoard(positions);
+        licorneBlanchePrise = new EscampeBoard();
+        licorneBlanchePrise.play("A1/B1/C1/D1/E1/F1", "blanc");
+        licorneBlanchePrise.play("A6/B6/C6/D6/E6/F6", "noir");
+        licorneBlanchePrise.arbitraryplace(0, -1, -1);
 
-        positions.set(0, new Point2D(0, 0));
-        positions.set(6, new Point2D(-1, -1));
-        licorneNoirePrise = new EscampeBoard(positions);
+        licorneNoirePrise = new EscampeBoard();
+        licorneNoirePrise.play("A1/B1/C1/D1/E1/F1", "blanc");
+        licorneNoirePrise.play("A6/B6/C6/D6/E6/F6", "noir");
+        licorneNoirePrise.arbitraryplace(6, -1, -1);
     }
 
     @Test
@@ -306,5 +299,20 @@ public class PlateauEscampeTest {
         p.setFromFile("save/default.game");
 
         Assert.assertEquals(plateau, p);
+    }
+
+    @Test
+    public void testPlacements(){
+        String[] placements = plateau.placements("blanc");
+        Assert.assertEquals(placements.length, 5544);
+        Assert.assertEquals(placements[0], "A1/B1/C1/D1/E1/F1");
+    }
+
+    @Test
+    public void testPlacementEncode(){
+        Assert.assertEquals(plateau.encodePlacement(0, 1, 2, 3, 4, 5, "blanc"), "A1/B1/C1/D1/E1/F1");
+        Assert.assertEquals(plateau.encodePlacement(0, 1, 2, 3, 4, 5, "noir"), "A5/B5/C5/D5/E5/F5");
+        Assert.assertEquals(plateau.encodePlacement(6, 7, 8, 9, 10, 11, "blanc"), "A2/B2/C2/D2/E2/F2");
+        Assert.assertEquals(plateau.encodePlacement(6, 7, 8, 9, 10, 11, "noir"), "A6/B6/C6/D6/E6/F6");
     }
 }

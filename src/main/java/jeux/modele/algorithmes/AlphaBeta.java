@@ -6,6 +6,8 @@ package jeux.modele.algorithmes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import jeux.modele.PlateauClonable;
 
@@ -74,7 +76,8 @@ public class AlphaBeta implements AlgoJeu {
     public String meilleurCoup(PlateauClonable p) {
         profondeurCourante = 0;
 
-        ArrayList<String> possiblesMoves = new ArrayList<String>(Arrays.asList(p.possiblesMoves(PlayerMax)));
+        List<String> possiblesMoves = Arrays.stream(p.possiblesMoves(PlayerMax)).collect(Collectors.toList());
+        System.out.println("prout");
 
         PlateauClonable pbis = p.copy();
 

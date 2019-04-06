@@ -1,0 +1,1 @@
+java -cp target\classes\ jeux.escampe.server.Solo

@@ -6,10 +6,12 @@ package jeux.modele.algorithmes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import jeux.modele.PlateauClonable;
 
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Human implements AlgoJeu {
 
@@ -44,7 +46,7 @@ public class Human implements AlgoJeu {
     // -------------------------------------------
     public String meilleurCoup(PlateauClonable p) {
         System.out.print("Entrer le coup à playr: ");
-        ArrayList<String> possiblesMoves = new ArrayList<String>(Arrays.asList(p.possiblesMoves(playerMax)));
+        List<String> possiblesMoves = Arrays.stream(p.possiblesMoves(playerMax)).collect(Collectors.toList());
         Scanner sc = new Scanner(System.in);
 
         while (true) {

@@ -17,9 +17,11 @@ import java.util.Arrays;
 
 public class EscampeBoard implements PlateauClonable {
 
-    public static String jBlanc = "Blanc";
-    public static String jNoir = "Noir";
+    // joueurs
+    public static String jBlanc = "blanc";
+    public static String jNoir = "noir";
 
+    // plateau
     private int pions[];
     private final int width = 6;
     private final int height = 6;
@@ -27,10 +29,12 @@ public class EscampeBoard implements PlateauClonable {
     private int cases_pions[][] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
 
+    // constantes de pions
     private static final int licorne_blanche = 0;
     private static final int licorne_noire = 6;
     private static final int case_libre = -1;
 
+    // liserés
     public static Lisere SIMPLE = Lisere.SIMPLE;
     public static Lisere DOUBLE = Lisere.DOUBLE;
     public static Lisere TRIPLE = Lisere.TRIPLE;
@@ -39,58 +43,54 @@ public class EscampeBoard implements PlateauClonable {
             { DOUBLE, SIMPLE, TRIPLE, DOUBLE, TRIPLE, SIMPLE }, { SIMPLE, TRIPLE, SIMPLE, TRIPLE, SIMPLE, DOUBLE },
             { TRIPLE, DOUBLE, DOUBLE, SIMPLE, TRIPLE, DOUBLE } };
 
+    // souvenir du dernier coup
     private Lisere derniereaction = null;
+
+    // est-ce que le placement a déjà été fait
+    private boolean placementfait = false;
+    private boolean placementBlanc = false;
+    private boolean placementNoir = false;
 
     public EscampeBoard() {
 
-        for (int[] line: cases_pions)
-            Arrays.fill(line, -1);
-
         pions = new int[24];
-        Point2D pos;
-        for (int i = 0; i < nb_pions; i++) {
-            if (i < 6) {
-                pions[i * 2] = 0;
-                pions[i * 2 + 1] = i;
-            } else {
-                pions[i * 2] = 5;
-                pions[i * 2 + 1] = i - 6;
-            }
-            pos = getPionPos(i);
-            cases_pions[pos.y][pos.x] = i;
-        }
-    }
-
-    public EscampeBoard(List<Point2D> positions) {
-        if (positions == null) {
-            throw new NullPointerException("La liste des positions ne doit pas être nulle");
-        }
-        if (positions.size() != nb_pions) {
-            throw new IllegalArgumentException("La liste des positions doit contenir 12 positions.");
-        }
-        for (int i = 0; i < positions.size() - 1; i++) {
-            Point2D current = positions.get(i);
-            for (int j = i + 1; j < positions.size(); j++) {
-                if (current.equals(positions.get(j))) {
-                    throw new IllegalArgumentException(
-                            "La liste des positions ne doit pas comporter de doublons. Deux pièces ne peuvent pas se chevaucher.");
-                }
-            }
-        }
 
         for (int[] line: cases_pions)
-            Arrays.fill(line, -1);
+            Arrays.fill(line, case_libre);
 
-        pions = new int[nb_pions * 2];
-        int pion = 0;
-        for (Point2D pos : positions) {
-            pions[pion * 2] = pos.y;
-            pions[pion * 2 + 1] = pos.x;
-            if (pos.x != -1 && pos.y != -1)
-                cases_pions[pos.y][pos.x] = pion;
-            pion++;
-        }
+        Arrays.fill(pions, -1);
     }
+
+    // public EscampeBoard(List<Point2D> positions) {
+    //     if (positions == null) {
+    //         throw new NullPointerException("La liste des positions ne doit pas être nulle");
+    //     }
+    //     if (positions.size() != nb_pions) {
+    //         throw new IllegalArgumentException("La liste des positions doit contenir 12 positions.");
+    //     }
+    //     for (int i = 0; i < positions.size() - 1; i++) {
+    //         Point2D current = positions.get(i);
+    //         for (int j = i + 1; j < positions.size(); j++) {
+    //             if (current.equals(positions.get(j))) {
+    //                 throw new IllegalArgumentException(
+    //                         "La liste des positions ne doit pas comporter de doublons. Deux pièces ne peuvent pas se chevaucher.");
+    //             }
+    //         }
+    //     }
+
+    //     for (int[] line: cases_pions)
+    //         Arrays.fill(line, -1);
+
+    //     pions = new int[nb_pions * 2];
+    //     int pion = 0;
+    //     for (Point2D pos : positions) {
+    //         pions[pion * 2] = pos.y;
+    //         pions[pion * 2 + 1] = pos.x;
+    //         if (pos.x != -1 && pos.y != -1)
+    //             cases_pions[pos.y][pos.x] = pion;
+    //         pion++;
+    //     }
+    // }
 
     @Override
     public boolean isValidMove(String move, String player) {
@@ -179,12 +179,17 @@ public class EscampeBoard implements PlateauClonable {
         }
     }
 
+    // TODO : prendre en compte les placements en début de jeu
     @Override
     public String[] possiblesMoves(String player) {
 
         if (gameOver()) {
             String[] res = {"E"};
             return res;
+        }
+
+        if (!placementfait){
+            return placements(player);
         }
 
         boolean isjb = isJoueurBlanc(player);
@@ -314,6 +319,49 @@ public class EscampeBoard implements PlateauClonable {
         return output;
     }
 
+    public String[] placements(String joueur){
+        String res[] = new String[5544]; // (6 parmi 12) * 6
+
+        int c = 0;
+        // pour chaque choix de 6 parmi 12 cases
+        for (int l = 0; l < 12; l++){ // licorne
+            for (int p1 = 0; p1 < 12; p1++){ // paladin 1
+                if (p1 != l){
+                    for (int p2 = p1 + 1; p2 < 12; p2++){ // paladin 2
+                        if (p2 != l && p2 != p1){
+                            for (int p3 = p2 + 1; p3 < 12; p3++){ // paladin 3
+                                if (p3 != l && p3 != p1 && p3 != p2){
+                                    for (int p4 = p3 + 1; p4 < 12; p4++){ // paladin 4
+                                        if (p4 != l && p4 != p1 && p4 != p2 && p4 != p3){
+                                            for (int p5 = p4 + 1; p5 < 12; p5++){ // paladin 5
+                                                if (p5 != l && p5 != p1 && p5 != p2 && p5 != p3 && p5 != p4){
+                                                    res[c] = encodePlacement(l, p1, p2, p3, p4, p5, joueur);
+                                                    c++;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    public String encodePlacement(int l, int p1, int p2, int p3, int p4, int p5, String joueur){
+        int base = isJoueurBlanc(joueur) ? 0 : 4;
+        return  CaseCoder.encode( l % width, base +  l / width) + "/" +
+                CaseCoder.encode(p1 % width, base + p1 / width) + "/" +
+                CaseCoder.encode(p2 % width, base + p2 / width) + "/" +
+                CaseCoder.encode(p3 % width, base + p3 / width) + "/" +
+                CaseCoder.encode(p4 % width, base + p4 / width) + "/" +
+                CaseCoder.encode(p5 % width, base + p5 / width);
+    }
+
     @Override
     public void play(String move, String player) {
         try {
@@ -330,7 +378,14 @@ public class EscampeBoard implements PlateauClonable {
                 case Positioning:
                     Positioning pos = interpretPositioning(move);
                     if (isValidMove(pos, player)){
-                        position(pos);
+                        if (isJoueurBlanc(player))
+                            placementBlanc = true;
+                        else
+                            placementNoir = true;
+                        if (placementBlanc && placementNoir)
+                            placementfait = true;
+
+                        position(pos, player);
                     } else {
                         throw new IllegalMove("'move' " + move + " is invalid.");
                     }
@@ -351,21 +406,10 @@ public class EscampeBoard implements PlateauClonable {
         place(mv.pion, mv.to.x, mv.to.y);
     }
 
-    public void position(Positioning pos){
-        Point2D p;
-        // Vider les champs du joueur
-        if (pos.positions.get(0).y == 0 || pos.positions.get(0).y == 1) {
-             for (int j = 0; j < 2; j++)
-                for (int i = 0; i < width; i++)
-                    cases_pions[j][i] = case_libre;
-        } else {
-            for (int j = 4; j < 6; j++)
-                for (int i = 0; i < width; i++)
-                    cases_pions[j][i] = case_libre;
-        }
+    public void position(Positioning pos, String player){
+        int base = isJoueurBlanc(player) ? licorne_blanche : licorne_noire;
         for (int i = 0; i < pos.positions.size(); i++){
-            p = pos.positions.get(i);
-            place(i, p.x, p.y);
+            place(i + base, pos.positions.get(i).x, pos.positions.get(i).y);
         }
     }
 
@@ -373,6 +417,12 @@ public class EscampeBoard implements PlateauClonable {
         pions[pion*2]       = y;
         pions[pion*2+1]     = x;
         cases_pions[y][x]   = pion;
+    }
+
+    public void arbitraryplace(int pion, int x, int y){
+        cases_pions[pions[pion*2]][pions[pion*2+1]] = case_libre;
+        pions[pion*2]   = y;
+        pions[pion*2+1] = x;
     }
 
     public TypeMove whatActionType(String action){
@@ -397,7 +447,7 @@ public class EscampeBoard implements PlateauClonable {
 
     @Override
     public boolean gameOver() {
-        return pions[0] == -1 && pions[1] == -1 || pions[12] == -1 && pions[13] == -1;
+        return placementfait && (pions[0] == -1 && pions[1] == -1 || pions[12] == -1 && pions[13] == -1);
     }
 
     public EscampeBoard(EscampeBoard other) {
@@ -462,11 +512,11 @@ public class EscampeBoard implements PlateauClonable {
     }
 
     public boolean isJoueurBlanc(String joueur){
-        return "blanc".equals(joueur);
+        return jBlanc.equals(joueur);
     }
 
     public boolean isJoueurNoir(String joueur){
-        return "noir".equals(joueur);
+        return jNoir.equals(joueur);
     }
 
     public String toString() {
