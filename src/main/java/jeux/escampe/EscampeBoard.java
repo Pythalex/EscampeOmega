@@ -9,14 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.StringBuilder;
 
-import jeux.modele.Partie1;
-
+import jeux.modele.PlateauClonable;
 import jeux.escampe.exception.IllegalMove;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class EscampeBoard implements Partie1 {
+public class EscampeBoard implements PlateauClonable {
 
     public static String jBlanc = "Blanc";
     public static String jNoir = "Noir";
@@ -407,7 +406,7 @@ public class EscampeBoard implements Partie1 {
     }
 
     @Override
-    public EscampeBoard clone() {
+    public EscampeBoard copy() {
         return new EscampeBoard(this);
     }
 

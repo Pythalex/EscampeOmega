@@ -203,7 +203,7 @@ public class PlateauEscampeTest {
             "+-----------------+\n"
         );
 
-        EscampeBoard copy = plateau.clone();
+        EscampeBoard copy = plateau.copy();
         plateau.play("A1-A1", "blanc");
         // nothing should happen (invalid move same case)
         Assert.assertEquals(plateau, copy);
@@ -241,7 +241,7 @@ public class PlateauEscampeTest {
             "+-----------------+\n"
         );
 
-        EscampeBoard copy = plateau.clone();
+        EscampeBoard copy = plateau.copy();
         plateau.play("C1/A5/T5/F5/D4/B2", "noir");
         // nothing should happen (invalid case T5)
         Assert.assertEquals(plateau, copy);
