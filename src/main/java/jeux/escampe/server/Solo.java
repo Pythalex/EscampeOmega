@@ -2,7 +2,7 @@ package jeux.escampe.server;
 
 import java.util.Date;
 
-import javax.swing.JFrame;
+//import javax.swing.JFrame;
 
 import jeux.modele.IJoueur;
 import jeux.escampe.joueur.*;
