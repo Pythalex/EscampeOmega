@@ -33,12 +33,12 @@ public class Minimax implements AlgoJeu {
     /**
      * Le playur Min (l'adversaire)
      */
-    private String playurMin;
+    private String PlayerMin;
 
     /**
      * Le playur Max (celui dont l'algorithme de recherche adopte le point de vue)
      */
-    private String playurMax;
+    private String PlayerMax;
 
     /**
      * Le nombre de noeuds développé par l'algorithme (intéressant pour se faire une
@@ -56,14 +56,14 @@ public class Minimax implements AlgoJeu {
     // -------------------------------------------
     // Constructeurs
     // -------------------------------------------
-    public Minimax(Heuristique h, String playurMax, String playurMin) {
-        this(h, playurMax, playurMin, PROFMAXDEFAUT);
+    public Minimax(Heuristique h, String PlayerMax, String PlayerMin) {
+        this(h, PlayerMax, PlayerMin, PROFMAXDEFAUT);
     }
 
-    public Minimax(Heuristique h, String playurMax, String playurMin, int profMaxi) {
+    public Minimax(Heuristique h, String PlayerMax, String PlayerMin, int profMaxi) {
         this.h = h;
-        this.playurMin = playurMin;
-        this.playurMax = playurMax;
+        this.PlayerMin = PlayerMin;
+        this.PlayerMax = PlayerMax;
         profMax = profMaxi;
         // System.out.println("Initialisation d'un MiniMax de profondeur " + profMax);
     }
@@ -74,17 +74,17 @@ public class Minimax implements AlgoJeu {
     public String meilleurCoup(PlateauClonable p) {
         profondeurCourante = 0;
 
-        ArrayList<String> possiblesMoves = (ArrayList<String>)Arrays.asList(p.possiblesMoves(playurMax));
+        ArrayList<String> possiblesMoves = new ArrayList<String>(Arrays.asList(p.possiblesMoves(PlayerMax)));
 
         PlateauClonable pbis = p.copy();
 
         String coupMax = possiblesMoves.get(0);
-        pbis.play(playurMax, coupMax);
+        pbis.play(PlayerMax, coupMax);
         int max = minMax(pbis);
 
         for (int i = 1; i < possiblesMoves.size(); i++) {
             pbis = p.copy();
-            pbis.play(playurMax, possiblesMoves.get(i));
+            pbis.play(PlayerMax, possiblesMoves.get(i));
 
             int newVal = minMax(pbis);
             if (newVal > max) {
@@ -116,13 +116,13 @@ public class Minimax implements AlgoJeu {
             nbfeuilles++;
 
             profondeurCourante--;
-            return h.eval(n, playurMax);
+            return h.eval(n, PlayerMax);
         } else {
             nbnoeuds++;
 
             int max = Integer.MIN_VALUE;
             PlateauClonable pbis;
-            String j = playurMax;
+            String j = PlayerMax;
 
             for (String c : n.possiblesMoves(j)) {
                 pbis = n.copy();
@@ -143,13 +143,13 @@ public class Minimax implements AlgoJeu {
             nbfeuilles++;
 
             profondeurCourante--;
-            return h.eval(n, playurMin);
+            return h.eval(n, PlayerMin);
         } else {
             nbnoeuds++;
 
             int min = Integer.MAX_VALUE;
             PlateauClonable pbis;
-            String j = playurMin;
+            String j = PlayerMin;
 
             for (String c : n.possiblesMoves(j)) {
                 pbis = n.copy();

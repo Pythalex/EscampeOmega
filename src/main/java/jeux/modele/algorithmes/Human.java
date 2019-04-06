@@ -25,17 +25,17 @@ public class Human implements AlgoJeu {
     /**
      * Le playur Max (celui dont l'algorithme de recherche adopte le point de vue)
      */
-    private String playurMax;
+    private String playerMax;
 
     // -------------------------------------------
     // Constructeurs
     // -------------------------------------------
-    public Human(Heuristique h, String playurMax, String playurMin) {
-        this(h, playurMax, playurMin, PROFMAXDEFAUT);
+    public Human(Heuristique h, String playerMax, String playerMin) {
+        this(h, playerMax, playerMin, PROFMAXDEFAUT);
     }
 
-    public Human(Heuristique h, String playurMax, String playurMin, int profMaxi) {
-        this.playurMax = playurMax;
+    public Human(Heuristique h, String playerMax, String playerMin, int profMaxi) {
+        this.playerMax = playerMax;
         // System.out.println("Initialisation d'un MiniMax de profondeur " + profMax);
     }
 
@@ -44,12 +44,12 @@ public class Human implements AlgoJeu {
     // -------------------------------------------
     public String meilleurCoup(PlateauClonable p) {
         System.out.print("Entrer le coup à playr: ");
-        ArrayList<String> coups = (ArrayList<String>)Arrays.asList(p.possiblesMoves(playurMax));
+        ArrayList<String> possiblesMoves = new ArrayList<String>(Arrays.asList(p.possiblesMoves(playerMax)));
         Scanner sc = new Scanner(System.in);
 
         while (true) {
             String reponse = sc.nextLine();
-            for (String c : coups) {
+            for (String c : possiblesMoves) {
                 if (c.toString().equals(reponse))
                     return c;
             }
