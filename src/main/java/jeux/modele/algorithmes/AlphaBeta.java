@@ -77,7 +77,6 @@ public class AlphaBeta implements AlgoJeu {
         profondeurCourante = 0;
 
         List<String> possiblesMoves = Arrays.stream(p.possiblesMoves(PlayerMax)).collect(Collectors.toList());
-        System.out.println("prout");
 
         PlateauClonable pbis = p.copy();
 
