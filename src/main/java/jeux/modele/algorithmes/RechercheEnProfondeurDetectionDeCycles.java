@@ -5,10 +5,7 @@ import jeux.modele.graphes.Solution;
 import jeux.modele.graphes.Noeud;
 import jeux.modele.graphes.Etat;
 
-import java.util.Queue;
-import java.util.Set;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import java.util.Scanner;
 

@@ -12,6 +12,8 @@ import java.util.LinkedList;
 
 public class Solution extends LinkedList<Etat> {
 
+    private static final long serialVersionUID = -5859189245921997730L;
+
     // Constructeurs -----------------------------------------------------------
     /**
      * Cree une solution vide

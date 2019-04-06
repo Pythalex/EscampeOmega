@@ -5,11 +5,6 @@ import jeux.modele.graphes.Solution;
 import jeux.modele.graphes.Noeud;
 import jeux.modele.graphes.Etat;
 
-import java.util.Queue;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 /**
  * RechercheEnProfondeurSimple
  * une impl�mentation simple de l'algorithme de recherche
