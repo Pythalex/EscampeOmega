@@ -1,6 +1,6 @@
 package jeux.modele;
 
-public interface Partiel {
+public interface Partie1 {
 
     /**
      * Initialise un plateau à partir d'un fichier texte.

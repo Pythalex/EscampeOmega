@@ -9,14 +9,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.StringBuilder;
 
-import jeux.modele.Partiel;
+import jeux.modele.Partie1;
 
 import jeux.escampe.exception.IllegalMove;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class EscampeBoard implements Partiel {
+public class EscampeBoard implements Partie1 {
 
     public static String jBlanc = "Blanc";
     public static String jNoir = "Noir";
