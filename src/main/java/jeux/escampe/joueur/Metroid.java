@@ -1,8 +1,11 @@
 package jeux.escampe.joueur;
 
+import jeux.escampe.EscampeBoard;
 import jeux.modele.IJoueur;
 
 public class Metroid implements IJoueur {
+
+    public EscampeBoard plateau;
 
     public Metroid(){
         
@@ -10,7 +13,7 @@ public class Metroid implements IJoueur {
 
 	@Override
 	public void initJoueur(int mycolour) {
-		
+		plateau = new EscampeBoard();
 	}
 
 	@Override

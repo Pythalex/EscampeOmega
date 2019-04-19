@@ -12,6 +12,11 @@ public class Arbitre implements IArbitre {
     }
 
     @Override
+    public void reset(){
+        plateau = new EscampeBoard();
+    }
+
+    @Override
     public void play(int color, String coup) {
         plateau.play(coup, joueurFromInt(color));
     }

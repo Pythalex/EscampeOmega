@@ -9,6 +9,8 @@ public interface IArbitre {
 
     public void play(int color, String coup);
 
+    public void reset();
+
     public Boolean GameOver();
 
 }

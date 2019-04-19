@@ -25,7 +25,7 @@ public class JoueurAleatoire implements IJoueur {
     private int colornum;
 
     // plateau courant
-    private PlateauClonable plateau = new EscampeBoard();
+    private PlateauClonable plateau;
 
     public JoueurAleatoire(){
         
@@ -36,6 +36,7 @@ public class JoueurAleatoire implements IJoueur {
         colornum = mycolour;
         moi = (mycolour == BLANC) ? "blanc" : "noir";
         ennemi = (mycolour == NOIR) ? "blanc" : "noir";
+        plateau = new EscampeBoard();
         initAlgo();
     }
     
