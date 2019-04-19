@@ -199,6 +199,8 @@ public class EscampeBoard implements PlateauClonable {
         for (int i = licorne_blanche; i < 12; i++){
             int y = pions[i*2];
             int x = pions[i*2+1];
+            if (y == -1 || x == -1)
+                System.out.println("HEHEHE");
             if ((i < licorne_noire && isjb || i >= licorne_noire) && cases_liseres[y][x] == derniereaction || derniereaction == null){
                 Lisere from = cases_liseres[y][x];
                 String base = CaseCoder.encode(x, y) + "-";
@@ -406,8 +408,8 @@ public class EscampeBoard implements PlateauClonable {
         // Si une licorne est prise il faut la retirer du terrain
         int case_cible = cases_pions[mv.to.y][mv.to.x];
         if (case_cible != case_libre){
-            pions[case_cible] = -1;
-            pions[case_cible+1] = -1;
+            pions[case_cible*2] = -1;
+            pions[case_cible*2+1] = -1;
         }
 
         cases_pions[mv.from.y][mv.from.x] = case_libre;
