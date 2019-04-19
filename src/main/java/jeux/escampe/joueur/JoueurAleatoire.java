@@ -1,5 +1,10 @@
 package jeux.escampe.joueur;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import jeux.escampe.EscampeBoard;
 import jeux.escampe.joueur.heuristiques.Aleatoire;
 import jeux.modele.IJoueur;
@@ -45,7 +50,9 @@ public class JoueurAleatoire implements IJoueur {
 
 	@Override
 	public String choixMouvement() {
-        String coup = algo.meilleurCoup(plateau);
+        List<String> coups = Arrays.stream(plateau.possiblesMoves(moi)).collect(Collectors.toList());
+
+        String coup = coups.get(new Random().nextInt(coups.size()));
         plateau.play(coup, moi);
 		return coup;
 	}

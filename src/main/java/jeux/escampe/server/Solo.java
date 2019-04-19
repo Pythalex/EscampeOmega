@@ -4,9 +4,11 @@ import java.util.Date;
 
 import javax.swing.JFrame;
 
+import jeux.modele.IArbitre;
 import jeux.modele.IJoueur;
 import jeux.escampe.gui.Applet;
-import jeux.escampe.joueur.*;
+import jeux.escampe.joueur.Arbitre;
+import jeux.escampe.joueur.JoueurAleatoire;
 
 /**
  * Petite Classe toute simple qui vous montre comment on peut lancer une partie sur deux IJoueurs...
@@ -26,6 +28,7 @@ import jeux.escampe.joueur.*;
 public class Solo {
     private static IJoueur joueurBlanc;
     private static IJoueur joueurNoir;
+    private static IArbitre arbitre;
     
     // Ne pas modifier ces constantes, elles seront utilisees par l'arbitre
     private final static int BLANC = -1;
@@ -33,12 +36,14 @@ public class Solo {
     
     private static int nbCoups = 0;
     
-    /*// Par défaut, on a une applet graphique*/
+    // Par défaut, on a une applet graphique
     static boolean APPLETGRAPHIQUE = true;
 
     // applet game viewer
     static private Applet vueDuJeu;
-    static private JFrame f = null;
+	static private JFrame f = null;
+	
+	static int[][] plateau = new int[6][6];
     
     
     /**
@@ -79,7 +84,28 @@ public class Solo {
     	}
     	System.out.println("Ok");
     	return joueur;
-    }
+	}
+	
+	public static int[] _1DTo2D(int _1d) {
+		return new int[] { _1d % 6, _1d / 6 };
+	}
+	public static int posStringToPosInTab(String posStr) {
+		String[] strPosToTabPos = new String[] { "A", "B", "C", "D", "E", "F" };
+		String[] posStrTab = posStr.toUpperCase().split("");
+
+		try {
+			if (posStrTab.length != 2 || Integer.parseInt(posStrTab[1]) > 6)
+				return -1;
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+
+		for (int i = 0; i < 6; i++) {
+			if (strPosToTabPos[i].equals(posStrTab[0]))
+				return (Integer.parseInt(posStrTab[1]) - 1) * 6 + i;
+		}
+		return -1;
+	}
     
     /**
      * Boucle principale du jeu, en utilisant une version de l'arbitre identique a celle du tournoi
@@ -89,32 +115,54 @@ public class Solo {
      * @param joueurBlanc
      * @param joueurNoir
      */
-    public static void gameLoop(IJoueur joueurBlanc, IJoueur joueurNoir) {
+    public static void gameLoop(IJoueur joueurBlanc, IJoueur joueurNoir, IArbitre arbitre) {
     	String coup;
-    	boolean partieFinie = false;
     	IJoueur joueurCourant = joueurNoir; // Dans Escampe le joueur Noir commence
     	
-    	while (!partieFinie) {
+    	while (true) {
+
+            if (arbitre.GameOver()){
+                break;
+            }
+
     		nbCoups++;
     		
-    		System.out.println("\n*********\nOn demande à " + joueurCourant.binoName() + " de jouer...");
+    		System.out.println("\n*********\nOn demande à " + joueurCourant.binoName() + " (" + joueurCourant.getNumJoueur() + ") de jouer...");
     		long waitingTime1 = new Date().getTime();
     		
-    		coup = joueurCourant.choixMouvement();
+			coup = joueurCourant.choixMouvement();
+			String[] coupSplit;
+
+			if(coup.length() == 17){
+				int[] i;
+				boolean prems = true;
+				for(String s : coup.split("/")){
+					i = _1DTo2D(posStringToPosInTab(s));
+					if(prems){
+						plateau[i[1]][i[0]] = (joueurCourant.getNumJoueur() == -1 ? -2 : 2);
+						prems = false;
+					}
+					else plateau[i[1]][i[0]] = joueurCourant.getNumJoueur();
+				}
+			}
+			else if(coup.length() == 5){
+				coupSplit = coup.split("-");
+				int[] i0, i1;
+				i0 = _1DTo2D(posStringToPosInTab(coupSplit[0]));
+				i1 = _1DTo2D(posStringToPosInTab(coupSplit[1]));
+				plateau[i1[1]][i1[0]] = plateau[i0[1]][i0[0]];
+				plateau[i0[1]][i0[0]] = 0;
+			}
+			vueDuJeu.addBoard(coup, plateau);
     		
     		long waitingTime2 = new Date().getTime();
     		// On rajoute 1 pour eliminer les temps infinis
     		long waitingTime = waitingTime2 - waitingTime1 + 1;
-    		System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
-    		try {
-    			Thread.sleep(1); // Juste pour attendre un peu
-    		}
-    		catch (InterruptedException e) {
-    		}
-    		
-    		if (coup.compareTo("xxxxx") == 0)
-    			partieFinie = true;
-    		else if (nbCoups == 2) { // Dans Escampe le joueur Blanc rejoue après avoir posé ses pièces
+            System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
+            
+            arbitre.play(joueurCourant.getNumJoueur(), coup);
+
+            if (nbCoups == 2) { // Dans Escampe le joueur Blanc rejoue après avoir posé ses pièces
     			// On avertit le joueur Noir du placement des pièces
     			joueurNoir.mouvementEnnemi(coup);
     		}
@@ -127,7 +175,13 @@ public class Solo {
     			// On avertit le second joueur du coup calcule par le precedent
     			joueurCourant.mouvementEnnemi(coup);
     			// Ce sera ensuite à lui de jouer de nouveau en haut de la boucle
-    		}
+            }
+            
+            // try {
+            //     Thread.sleep(500);
+            // } catch (Exception e){
+            //     e.printStackTrace();
+            // }   
     	}
     	
     	System.out.println("Partie finie en " + nbCoups + " coups.\n");	
@@ -141,16 +195,16 @@ public class Solo {
      */
     public static void main(String args[]) {
     	// S'il le faut, on initialise l'applet graphique
-    	// if (APPLETGRAPHIQUE) {
-    	// 	f = new JFrame("Vue du jeu");
-    	// 	vueDuJeu = new Applet();
-    	// 	vueDuJeu.buildUI(f.getContentPane());
-    	// 	f.setSize(vueDuJeu.getDimension());
-    	// 	vueDuJeu.setMyFrame(f);
-    	// 	f.setVisible(true);
-    	// 	vueDuJeu.addBoard("Départ ", );
-    	// 	vueDuJeu.update(f.getGraphics(), f.getInsets());
-    	// }
+    	if (APPLETGRAPHIQUE) {
+    		f = new JFrame("Vue du jeu");
+    		vueDuJeu = new Applet();
+    		vueDuJeu.buildUI(f.getContentPane());
+    		f.setSize(vueDuJeu.getDimension());
+    		vueDuJeu.setMyFrame(f);
+			f.setVisible(true);
+    		vueDuJeu.addBoard("Départ ", plateau);
+			vueDuJeu.update(f.getGraphics(), f.getInsets());
+    	}
     	
     	System.out.println("Partie solo ...");
     	
@@ -175,10 +229,13 @@ public class Solo {
     	System.out.println("Joueur Blanc : " + joueurBlanc.binoName());
     	
     	joueurNoir.initJoueur(NOIR);
-    	System.out.println("Joueur Noir : " + joueurNoir.binoName());
+        System.out.println("Joueur Noir : " + joueurNoir.binoName());
+        
+        arbitre = new Arbitre();
     	
-    	System.out.println("Initialisation des deux joueurs ok.");
+    	System.out.println("Initialisation des deux joueurs et de l'arbitre ok.");
     	
-    	gameLoop(joueurBlanc, joueurNoir);
+    	gameLoop(joueurBlanc, joueurNoir, arbitre);
     }
 }
+
