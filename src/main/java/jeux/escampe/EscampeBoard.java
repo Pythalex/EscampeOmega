@@ -155,6 +155,7 @@ public class EscampeBoard implements PlateauClonable {
         return canMoveTo(move.pion, move.to);
     }
 
+    // TODO y'a un bug ici
     public boolean isValidMove(Positioning pos, String player) {
         int i;
         boolean taken[] = new boolean[36];
@@ -180,7 +181,6 @@ public class EscampeBoard implements PlateauClonable {
         }
     }
 
-    // TODO : corriger les erreurs de coups non détectés
     @Override
     public String[] possiblesMoves(String player) {
 
@@ -403,6 +403,13 @@ public class EscampeBoard implements PlateauClonable {
     }
 
     public void move(Move mv){
+        // Si une licorne est prise il faut la retirer du terrain
+        int case_cible = cases_pions[mv.to.y][mv.to.x];
+        if (case_cible != case_libre){
+            pions[case_cible] = -1;
+            pions[case_cible+1] = -1;
+        }
+
         cases_pions[mv.from.y][mv.from.x] = case_libre;
         place(mv.pion, mv.to.x, mv.to.y);
     }
@@ -461,7 +468,6 @@ public class EscampeBoard implements PlateauClonable {
         return new EscampeBoard(this);
     }
 
-    // TODO : prendre en compte les mouvements triple tels que gauche bas droite
     public boolean canMoveTo(int pion, Point2D to){
 
         Point2D from = new Point2D(pions[pion*2+1], pions[pion*2]);
