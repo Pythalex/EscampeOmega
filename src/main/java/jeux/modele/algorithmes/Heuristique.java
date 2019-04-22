@@ -1,6 +1,7 @@
 package jeux.modele.algorithmes;
 
-import jeux.modele.PlateauClonable;;
+import jeux.modele.IJoueur;
+import jeux.modele.PlateauClonable;
 
 public interface Heuristique {
 

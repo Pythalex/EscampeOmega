@@ -1,0 +1,1 @@
+java -cp "target\classes\;C:\Users\Alex\.m2\repository\org\xerial\sqlite-jdbc\3.27.2.1\sqlite-jdbc-3.27.2.1.jar" jeux.escampe.server.SoloRecorder jeux.escampe.joueur.Alpha jeux.escampe.joueur.JoueurAleatoire 50

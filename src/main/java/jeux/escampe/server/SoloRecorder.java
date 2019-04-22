@@ -133,7 +133,7 @@ public class SoloRecorder {
 
     		nbCoups++;
     		
-    		System.out.println("\n*********\nOn demande à " + joueurCourant.binoName() + " (" + joueurCourant.getNumJoueur() + ") de jouer...");
+    		//System.out.println("\n*********\nOn demande à " + joueurCourant.binoName() + " (" + joueurCourant.getNumJoueur() + ") de jouer...");
     		long waitingTime1 = new Date().getTime();
     		
 			coup = joueurCourant.choixMouvement();
@@ -163,7 +163,7 @@ public class SoloRecorder {
     		long waitingTime2 = new Date().getTime();
     		// On rajoute 1 pour eliminer les temps infinis
     		long waitingTime = waitingTime2 - waitingTime1 + 1;
-            System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
+            //System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
             
             arbitre.play(joueurCourant.getNumJoueur(), coup);
 
@@ -189,7 +189,7 @@ public class SoloRecorder {
             // }   
     	}
     	
-        System.out.println("Partie finie en " + nbCoups + " coups.\n");
+        //System.out.println("Partie finie en " + nbCoups + " coups.\n");
         return joueurCourant.getNumJoueur();
     }
     
@@ -248,17 +248,13 @@ public class SoloRecorder {
         arbitre = new Arbitre();
         
         for (int t = 0; t < times; t++) {
-            System.out.println("Partie solo ...");
+            System.out.println("Partie " + t + " sur " + times + ".");
             
             joueurBlanc.initJoueur(BLANC);
-            System.out.println("Joueur Blanc : " + joueurBlanc.binoName());
             
             joueurNoir.initJoueur(NOIR);
-            System.out.println("Joueur Noir : " + joueurNoir.binoName());
             
             arbitre.reset();
-            
-            System.out.println("Initialisation des deux joueurs et de l'arbitre ok.");
             
             result = gameLoop(joueurBlanc, joueurNoir, arbitre);
 

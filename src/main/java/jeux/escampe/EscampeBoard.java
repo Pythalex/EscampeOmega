@@ -22,34 +22,34 @@ public class EscampeBoard implements PlateauClonable {
     public static String jNoir = "noir";
 
     // plateau
-    private int pions[];
-    private final int width = 6;
-    private final int height = 6;
-    private final int nb_pions = 12;
-    private int cases_pions[][] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 },
+    public int pions[];
+    public static final int width = 6;
+    public static final int height = 6;
+    public static final int nb_pions = 12;
+    public int cases_pions[][] = { { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } };
 
     // constantes de pions
-    private static final int licorne_blanche = 0;
-    private static final int licorne_noire = 6;
-    private static final int case_libre = -1;
+    public static final int licorne_blanche = 0;
+    public static final int licorne_noire = 6;
+    public static final int case_libre = -1;
 
     // liserés
     public static Lisere SIMPLE = Lisere.SIMPLE;
     public static Lisere DOUBLE = Lisere.DOUBLE;
     public static Lisere TRIPLE = Lisere.TRIPLE;
-    private static Lisere cases_liseres[][] = { { SIMPLE, DOUBLE, DOUBLE, TRIPLE, SIMPLE, DOUBLE },
+    public static Lisere cases_liseres[][] = { { SIMPLE, DOUBLE, DOUBLE, TRIPLE, SIMPLE, DOUBLE },
             { TRIPLE, SIMPLE, TRIPLE, SIMPLE, TRIPLE, DOUBLE }, { DOUBLE, TRIPLE, SIMPLE, DOUBLE, SIMPLE, TRIPLE },
             { DOUBLE, SIMPLE, TRIPLE, DOUBLE, TRIPLE, SIMPLE }, { SIMPLE, TRIPLE, SIMPLE, TRIPLE, SIMPLE, DOUBLE },
             { TRIPLE, DOUBLE, DOUBLE, SIMPLE, TRIPLE, DOUBLE } };
 
     // souvenir du dernier coup
-    private Lisere derniereaction = null;
+    public Lisere derniereaction = null;
 
     // est-ce que le placement a déjà été fait
-    private boolean placementfait = false;
-    private boolean placementBlanc = false;
-    private boolean placementNoir = false;
+    public boolean placementfait = false;
+    public boolean placementBlanc = false;
+    public boolean placementNoir = false;
 
     public EscampeBoard() {
 

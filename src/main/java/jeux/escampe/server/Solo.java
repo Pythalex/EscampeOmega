@@ -212,18 +212,19 @@ public class Solo {
     		joueurBlanc = getDefaultPlayer("Blanc");
     		joueurNoir = getDefaultPlayer("Noir");
     	}
-    	else if (args.length == 2) { // On a deux classes à charger
-    		joueurBlanc = getDefaultPlayer("Blanc");
-    		joueurNoir = getDefaultPlayer("Noir");
-    	}
-    	else if (args.length == 3) {
+    	else if (args.length == 1) {
     		joueurBlanc = loadNamedPlayer(args[0], "Blanc");
     		joueurNoir = loadNamedPlayer(args[0], "Noir");
     	}
-    	else if (args.length == 4) {
+    	else {
     		joueurBlanc = loadNamedPlayer(args[0], "Blanc");
     		joueurNoir = loadNamedPlayer(args[1], "Noir");
-    	}
+        }
+        
+        System.out.println(args.length);
+        for(String a: args){
+            System.out.println(a);
+        }
     	
     	joueurBlanc.initJoueur(BLANC);
     	System.out.println("Joueur Blanc : " + joueurBlanc.binoName());

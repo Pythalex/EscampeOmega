@@ -97,8 +97,8 @@ public class AlphaBeta implements AlgoJeu {
             }
         }
 
-        System.out.println("Nombre de feuilles visitées : " + nbfeuilles);
-        System.out.println("Nombre de noeuds visitées : " + nbnoeuds);
+        // System.out.println("Nombre de feuilles visitées : " + nbfeuilles);
+        // System.out.println("Nombre de noeuds visitées : " + nbnoeuds);
         return coupMax;
     }
 

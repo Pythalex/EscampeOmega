@@ -1,38 +1,48 @@
 package jeux.escampe.joueur;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import jeux.escampe.EscampeBoard;
 import jeux.modele.IJoueur;
-import jeux.modele.PlateauClonable;
 import jeux.modele.algorithmes.AlgoJeu;
 import jeux.modele.algorithmes.AlphaBeta;
 import jeux.modele.algorithmes.Heuristique;
 
-public class JoueurAleatoire implements IJoueur {
+import jeux.escampe.joueur.heuristiques.HeuristiqueAlpha;
 
+public class Alpha implements IJoueur {
+
+    public EscampeBoard plateau;
+
+    // IA
+    private Heuristique h = new HeuristiqueAlpha();
+    private AlgoJeu algo;
+    private final int profmax = 5;
 
     // infos sur sa couleur
     private String moi; // blanc/noir
     private String ennemi;
     private int colornum;
 
-    // plateau courant
-    private PlateauClonable plateau;
-
-    public JoueurAleatoire(){
+    public Alpha(){
         
     }
 
 	@Override
 	public void initJoueur(int mycolour) {
+        plateau = new EscampeBoard();
         colornum = mycolour;
         moi = (mycolour == BLANC) ? "blanc" : "noir";
         ennemi = (mycolour == NOIR) ? "blanc" : "noir";
         plateau = new EscampeBoard();
+        initAlgo();
+    }
+    
+    public void initAlgo(){
+        algo = new AlphaBeta(h, moi, ennemi, profmax);
     }
 
 	@Override
@@ -42,19 +52,17 @@ public class JoueurAleatoire implements IJoueur {
 
 	@Override
 	public String choixMouvement() {
-        List<String> coups = Arrays.stream(plateau.possiblesMoves(moi)).collect(Collectors.toList());
-
-        String coup = coups.get(new Random().nextInt(coups.size()));
+        String coup = algo.meilleurCoup(plateau);
         plateau.play(coup, moi);
-		return coup;
+        return coup;
 	}
 
 	@Override
 	public void declareLeVainqueur(int colour) {
 		if (colour == colornum){
-            System.out.println("L'aléatoire gagne toujours.");
+            System.out.println("Alpha win bloop bloop.");
         } else {
-            System.out.println("Je suis aléatoire donc ça compte pas.");
+            System.out.println("...");
         }
 	}
 
