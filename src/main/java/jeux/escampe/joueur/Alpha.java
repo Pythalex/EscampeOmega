@@ -11,21 +11,21 @@ import jeux.modele.algorithmes.AlgoJeu;
 import jeux.modele.algorithmes.AlphaBeta;
 import jeux.modele.algorithmes.Heuristique;
 
-import jeux.escampe.joueur.heuristiques.HeuristiqueAlpha;
+import jeux.escampe.joueur.heuristiques.HAlpha;
 
 public class Alpha implements IJoueur {
 
-    public EscampeBoard plateau;
+    protected EscampeBoard plateau;
 
     // IA
-    private Heuristique h = new HeuristiqueAlpha();
-    private AlgoJeu algo;
-    private final int profmax = 5;
+    protected Heuristique h = new HAlpha();
+    protected AlgoJeu algo;
+    protected final int profmax = 5;
 
     // infos sur sa couleur
-    private String moi; // blanc/noir
-    private String ennemi;
-    private int colornum;
+    protected String moi; // blanc/noir
+    protected String ennemi;
+    protected int colornum;
 
     public Alpha(){
         
@@ -60,7 +60,7 @@ public class Alpha implements IJoueur {
 	@Override
 	public void declareLeVainqueur(int colour) {
 		if (colour == colornum){
-            System.out.println("Alpha win bloop bloop.");
+            System.out.println("Alpha wins bloop bloop.");
         } else {
             System.out.println("...");
         }

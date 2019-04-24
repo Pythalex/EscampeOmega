@@ -1,6 +1,6 @@
 package jeux.escampe;
 
-enum Lisere {
+public enum Lisere {
     SIMPLE,
     DOUBLE,
     TRIPLE

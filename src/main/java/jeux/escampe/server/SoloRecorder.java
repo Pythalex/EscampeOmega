@@ -47,7 +47,7 @@ public class SoloRecorder {
     static int[][] plateau = new int[6][6];
     
     static BDDWriter bddwriter = new BDDWriter("match.sqlite");
-    static int buffermax = 50;
+    static int buffermax = 512;
     static int filled = 0;
     static String buffer[][] = new String[buffermax][2];
     
@@ -189,8 +189,8 @@ public class SoloRecorder {
             // }   
     	}
     	
-        //System.out.println("Partie finie en " + nbCoups + " coups.\n");
-        return joueurCourant.getNumJoueur();
+        // On inverse le joueur courant car le test de fin de partie se fait en début de boucle
+        return -joueurCourant.getNumJoueur();
     }
     
 
@@ -202,17 +202,21 @@ public class SoloRecorder {
         filled++;
 
         if (filled == buffermax){
-            flush_writer();
+            if (!flush_writer())
+                return false;
         }
         return true;
     }
 
     public static boolean flush_writer(){
         boolean failed = false;
+        bddwriter.useConnection();
         for (int i = 0; i < filled; i++){
             failed = bddwriter.insertMatchResult(buffer[i][0], buffer[i][1]) && failed;
         }
-        filled = 0;
+        if (!failed)
+            filled = 0;
+        bddwriter.closeConnection();
         return !failed;
     }
 
@@ -223,8 +227,6 @@ public class SoloRecorder {
      * @param args
      */
     public static void main(String args[]) {
-
-        bddwriter.useConnection();
 
         if (args.length == 0) { // On a deux classes à charger
     		joueurBlanc = getDefaultPlayer("Blanc");
@@ -258,14 +260,19 @@ public class SoloRecorder {
             
             result = gameLoop(joueurBlanc, joueurNoir, arbitre);
 
-            if (!write_match_result((result == 1 ? joueurNoir : joueurBlanc), (result == 1 ? joueurBlanc : joueurNoir))){
-                System.err.println("Erreur lors de l'écriture dans la BDD.");
-                System.exit(-1);
+            int timeFailed = 0;
+            while (!write_match_result((result == 1 ? joueurNoir : joueurBlanc), (result == 1 ? joueurBlanc : joueurNoir))){
+                System.err.println("Erreur lors de l'écriture dans la BDD. Attente avant nouvel essai (" + 3000 + 3000 * timeFailed + " ms) ...");
+                try {
+                    Thread.sleep(3000 + 3000 * timeFailed);
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+                timeFailed++;
             }
         }
 
         flush_writer();
-        bddwriter.closeConnection();
     }
 }
 

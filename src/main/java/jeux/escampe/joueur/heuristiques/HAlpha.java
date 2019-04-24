@@ -7,7 +7,7 @@ import jeux.escampe.Point2D;
 import jeux.modele.PlateauClonable;
 import jeux.modele.algorithmes.Heuristique;
 
-public class HeuristiqueAlpha implements Heuristique {
+public class HAlpha implements Heuristique {
 
     Random r = new Random();
 
@@ -55,19 +55,26 @@ public class HeuristiqueAlpha implements Heuristique {
     public int eval(PlateauClonable plateau, String joueur) {
         EscampeBoard p = (EscampeBoard) plateau;
 
-        // get position licorne alliée
-        Point2D licorneAllie = new Point2D(p.pions[EscampeBoard.licorne_blanche*2], 
+        // get position licorne blanche
+        Point2D licorneblanche = new Point2D(p.pions[EscampeBoard.licorne_blanche*2], 
             p.pions[EscampeBoard.licorne_blanche*2+1]);
         // get position licorne ennemie
-        Point2D licorneEnnemie = new Point2D(p.pions[EscampeBoard.licorne_noire*2], 
+        Point2D licornenoire = new Point2D(p.pions[EscampeBoard.licorne_noire*2], 
             p.pions[EscampeBoard.licorne_noire*2+1]);
         // get position du pion ennemi le plus proche de la licorne alliée
-        Point2D paladinEnnemi = getPaladinProcheDe(licorneAllie.x, licorneAllie.y, p, "noir".equals(joueur));
+        Point2D paladinblanc = getPaladinProcheDe(licorneblanche.x, licorneblanche.y, p, "noir".equals(joueur));
         // get position du pion allié le plus proche de la licorne ennemie
-        Point2D paladinAllie = getPaladinProcheDe(licorneEnnemie.x, licorneEnnemie.y, p, "blanc".equals(joueur));
+        Point2D paladinnoir = getPaladinProcheDe(licornenoire.x, licornenoire.y, p, "blanc".equals(joueur));
         
         // difference
-        return paladinEnnemi.manhattan_distance(licorneAllie) - paladinAllie.manhattan_distance(licorneEnnemie);
+        if (p.isJoueurBlanc(joueur)){
+            return paladinnoir.manhattan_distance(licorneblanche) - 
+                paladinblanc.manhattan_distance(licornenoire);
+        } else {
+            return paladinblanc.manhattan_distance(licornenoire) - 
+                paladinnoir.manhattan_distance(licorneblanche);
+        }
+        
     }
 
 }
