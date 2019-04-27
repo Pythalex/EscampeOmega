@@ -603,15 +603,18 @@ public class EscampeBoard implements PlateauClonable {
 
         for (int i = 0; i < nb_pions; i++) {
             Point2D pos = getPionPos(i);
-
-            if (i == 0) {
-                p[pos.y * width + pos.x] = "LB";
-            } else if (i == 6) {
-                p[pos.y * width + pos.x] = "LN";
-            } else if (i < 6) {
-                p[pos.y * width + pos.x] = "PB";
-            } else {
-                p[pos.y * width + pos.x] = "PN";
+            
+            // Ne pas tenter d'afficher un pion hors du terrain
+            if (pos.y != -1 && pos.x != -1) {
+                if (i == 0) {
+                    p[pos.y * width + pos.x] = "LB";
+                } else if (i == 6) {
+                    p[pos.y * width + pos.x] = "LN";
+                } else if (i < 6) {
+                    p[pos.y * width + pos.x] = "PB";
+                } else {
+                    p[pos.y * width + pos.x] = "PN";
+                }
             }
         }
 
