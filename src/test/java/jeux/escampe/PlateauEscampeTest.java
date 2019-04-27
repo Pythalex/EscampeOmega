@@ -330,4 +330,12 @@ public class PlateauEscampeTest {
         Assert.assertEquals(plateau.encodePlacement(6, 7, 8, 9, 10, 11, "blanc"), "A2/B2/C2/D2/E2/F2");
         Assert.assertEquals(plateau.encodePlacement(6, 7, 8, 9, 10, 11, "noir"), "A6/B6/C6/D6/E6/F6");
     }
+
+    @Test
+    public void testCopy(){
+        EscampeBoard pcopy = plateau.copy();
+        pcopy.play("A5/B5/C5/D5/E5/F5", "noir");
+        Assert.assertFalse(plateau.equals(pcopy));
+        Assert.assertTrue(plateau.equals(plateau));
+    }
 }

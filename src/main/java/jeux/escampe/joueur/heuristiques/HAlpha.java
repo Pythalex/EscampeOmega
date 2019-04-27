@@ -11,15 +11,19 @@ public class HAlpha implements Heuristique {
 
     Random r = new Random();
 
-    public Point2D getPaladinProcheDe(int x, int y, EscampeBoard p, boolean blanc) {
-        Point2D objectif = new Point2D(x, y);
+    public int getDistancePaladinProcheDeLicorne(EscampeBoard p, boolean licorneBlanche) {
+        Point2D objectif = new Point2D(-1, -1);
         Point2D minpos = new Point2D(-1, -1);
         Point2D paladinpos = new Point2D(-1, -1);
+        int mindistance = 0;
     
-        if (blanc){
+        if (licorneBlanche){ // on veut les paladins pres de  la licorne blanche
 
-            int mindistance = Integer.MAX_VALUE;
-            for (int i = 1; i < EscampeBoard.licorne_noire; i++){
+            objectif.x = p.pions[EscampeBoard.licorne_blanche*2];
+            objectif.y = p.pions[EscampeBoard.licorne_blanche*2 + 1];
+
+            mindistance = Integer.MAX_VALUE;
+            for (int i = EscampeBoard.licorne_noire + 1; i < EscampeBoard.nb_pions; i++){
                 paladinpos.x = p.pions[i*2];
                 paladinpos.y = p.pions[i*2+1];
                 int dist = paladinpos.manhattan_distance(objectif);
@@ -32,9 +36,12 @@ public class HAlpha implements Heuristique {
             }
 
         } else { // ennemi
+
+            objectif.x = p.pions[EscampeBoard.licorne_noire*2];
+            objectif.y = p.pions[EscampeBoard.licorne_noire*2 + 1];
              
-            int mindistance = Integer.MAX_VALUE;
-            for (int i = EscampeBoard.licorne_noire + 1; i < EscampeBoard.nb_pions; i++){
+            mindistance = Integer.MAX_VALUE;
+            for (int i = 1; i < EscampeBoard.licorne_noire; i++){
                 paladinpos.x = p.pions[i*2];
                 paladinpos.y = p.pions[i*2+1];
                 int dist = paladinpos.manhattan_distance(objectif);
@@ -48,31 +55,38 @@ public class HAlpha implements Heuristique {
 
         }
 
-        return minpos;
+        return mindistance;
     }
 
     @Override
     public int eval(PlateauClonable plateau, String joueur) {
         EscampeBoard p = (EscampeBoard) plateau;
+        boolean licorneBlanche = true;
+        boolean licorneNoire = false;
 
-        // get position licorne blanche
-        Point2D licorneblanche = new Point2D(p.pions[EscampeBoard.licorne_blanche*2], 
-            p.pions[EscampeBoard.licorne_blanche*2+1]);
-        // get position licorne ennemie
-        Point2D licornenoire = new Point2D(p.pions[EscampeBoard.licorne_noire*2], 
-            p.pions[EscampeBoard.licorne_noire*2+1]);
-        // get position du pion ennemi le plus proche de la licorne alliée
-        Point2D paladinblanc = getPaladinProcheDe(licorneblanche.x, licorneblanche.y, p, "noir".equals(joueur));
-        // get position du pion allié le plus proche de la licorne ennemie
-        Point2D paladinnoir = getPaladinProcheDe(licornenoire.x, licornenoire.y, p, "blanc".equals(joueur));
+        // distance de manhattan entre le pion ennemi le plus proche de la licorne alliée et la licorne
+        int distancePaladinBlancSurLicorneNoire = getDistancePaladinProcheDeLicorne(p, licorneNoire);
+        // distance de manhattan entre le pion allié le plus proche de la licorne ennemie et la licorne
+        int distancePaladinNoireSurLicorneBlanche = getDistancePaladinProcheDeLicorne(p, licorneBlanche);
+
         
+        // System.err.println("Pour joueur " + joueur + " -> " + distancePaladinBlancSurLicorneNoire + " " + distancePaladinNoireSurLicorneBlanche);
+        // try {
+        //     System.err.println(plateau);
+        //     Thread.sleep(1500);
+        // } catch (Exception e){
+        //     e.printStackTrace();
+        // }
+
         // difference
         if (p.isJoueurBlanc(joueur)){
-            return paladinnoir.manhattan_distance(licorneblanche) - 
-                paladinblanc.manhattan_distance(licornenoire);
+            //System.out.println(joueur + "blanc");
+            return distancePaladinNoireSurLicorneBlanche - 
+                distancePaladinBlancSurLicorneNoire;
         } else {
-            return paladinblanc.manhattan_distance(licornenoire) - 
-                paladinnoir.manhattan_distance(licorneblanche);
+            //System.out.println(joueur + "noir");
+            return distancePaladinBlancSurLicorneNoire - 
+                distancePaladinNoireSurLicorneBlanche;
         }
         
     }

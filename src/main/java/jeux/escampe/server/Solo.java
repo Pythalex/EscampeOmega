@@ -158,7 +158,7 @@ public class Solo {
     		long waitingTime2 = new Date().getTime();
     		// On rajoute 1 pour eliminer les temps infinis
     		long waitingTime = waitingTime2 - waitingTime1 + 1;
-            System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
+            System.out.println("Le joueur " + joueurCourant.getNumJoueur() + " a joué le coup " + coup + " en " + waitingTime + "s.");
             
             arbitre.play(joueurCourant.getNumJoueur(), coup);
 
@@ -184,7 +184,8 @@ public class Solo {
             // }   
     	}
     	
-    	System.out.println("Partie finie en " + nbCoups + " coups.\n");	
+        System.out.println("Partie finie en " + nbCoups + " coups.\n");
+        System.out.println("Result : " + -joueurCourant.getNumJoueur());
     }
     
     /**
@@ -209,8 +210,8 @@ public class Solo {
     	System.out.println("Partie solo ...");
     	
     	if (args.length == 0) { // On a deux classes à charger
-    		joueurBlanc = getDefaultPlayer("Blanc");
-    		joueurNoir = getDefaultPlayer("Noir");
+    		joueurBlanc = loadNamedPlayer("jeux.escampe.joueur.Alpha", "Blanc");
+    		joueurNoir = loadNamedPlayer("jeux.escampe.joueur.Alpha", "Noir");
     	}
     	else if (args.length == 1) {
     		joueurBlanc = loadNamedPlayer(args[0], "Blanc");

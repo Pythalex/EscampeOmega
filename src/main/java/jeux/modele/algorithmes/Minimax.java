@@ -85,7 +85,7 @@ public class Minimax implements AlgoJeu {
 
         for (int i = 1; i < possiblesMoves.size(); i++) {
             pbis = p.copy();
-            pbis.play(PlayerMax, possiblesMoves.get(i));
+            pbis.play(possiblesMoves.get(i), PlayerMax);
 
             int newVal = minMax(pbis);
             if (newVal > max) {
@@ -127,7 +127,7 @@ public class Minimax implements AlgoJeu {
 
             for (String c : n.possiblesMoves(j)) {
                 pbis = n.copy();
-                pbis.play(j, c);
+                pbis.play(c, j);
 
                 max = Integer.max(max, minMax(pbis));
             }
@@ -154,7 +154,7 @@ public class Minimax implements AlgoJeu {
 
             for (String c : n.possiblesMoves(j)) {
                 pbis = n.copy();
-                pbis.play(j, c);
+                pbis.play(c, j);
 
                 min = Integer.min(min, maxMin(pbis));
             }

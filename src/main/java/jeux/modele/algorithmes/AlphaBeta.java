@@ -7,6 +7,7 @@ package jeux.modele.algorithmes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import jeux.modele.PlateauClonable;
@@ -33,12 +34,12 @@ public class AlphaBeta implements AlgoJeu {
     private Heuristique h;
 
     /**
-     * Le playur Min (l'adversaire)
+     * Le playeur Min (l'adversaire)
      */
     private String PlayerMin;
 
     /**
-     * Le playur Max (celui dont l'algorithme de recherche adopte le point de vue)
+     * Le playeur Max (celui dont l'algorithme de recherche adopte le point de vue)
      */
     private String PlayerMax;
 
@@ -88,7 +89,7 @@ public class AlphaBeta implements AlgoJeu {
 
         for (int i = 1; i < possiblesMoves.size(); i++) {
             pbis = p.copy();
-            pbis.play(PlayerMax, possiblesMoves.get(i));
+            pbis.play(possiblesMoves.get(i), PlayerMax);
 
             int newVal = minMax(pbis, max, Integer.MAX_VALUE);
             if (newVal > max) {
@@ -116,10 +117,15 @@ public class AlphaBeta implements AlgoJeu {
     /* Evaluation pour ami */
     public int maxMin(PlateauClonable n, int alpha, int beta) {
         profondeurCourante++;
+        // System.err.println("Maxmin " + profondeurCourante);
+        // System.err.println(n);
+        // Scanner sc = new Scanner(System.in);
+        // sc.nextLine();
         if (profondeurCourante >= profMax) {
             nbfeuilles++;
 
             profondeurCourante--;
+            
             return h.eval(n, PlayerMax);
         } else {
             nbnoeuds++;
@@ -128,8 +134,9 @@ public class AlphaBeta implements AlgoJeu {
             String j = PlayerMax;
 
             for (String c : n.possiblesMoves(j)) {
+                System.err.println("Coup : " + c);
                 pbis = n.copy();
-                pbis.play(j, c);
+                pbis.play(c, j);
 
                 alpha = Integer.max(alpha, minMax(pbis, alpha, beta));
 
@@ -146,6 +153,10 @@ public class AlphaBeta implements AlgoJeu {
     /* Evaluation pour ennemi */
     public int minMax(PlateauClonable n, int alpha, int beta) {
         profondeurCourante++;
+        // System.err.println("Minmax " + profondeurCourante);
+        // System.err.println(n);
+        // Scanner sc = new Scanner(System.in);
+        // sc.nextLine();
         if (profondeurCourante >= profMax) {
             nbfeuilles++;
 
@@ -158,8 +169,9 @@ public class AlphaBeta implements AlgoJeu {
             String j = PlayerMin;
 
             for (String c : n.possiblesMoves(j)) {
+                System.err.println("Coup : " + c);
                 pbis = n.copy();
-                pbis.play(j, c);
+                pbis.play(c, j);
 
                 beta = Integer.min(beta, maxMin(pbis, alpha, beta));
 

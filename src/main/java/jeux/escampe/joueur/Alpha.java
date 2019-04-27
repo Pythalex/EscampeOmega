@@ -26,6 +26,7 @@ public class Alpha implements IJoueur {
     protected String moi; // blanc/noir
     protected String ennemi;
     protected int colornum;
+    public boolean first = true;
 
     public Alpha(){
         
@@ -38,6 +39,7 @@ public class Alpha implements IJoueur {
         moi = (mycolour == BLANC) ? "blanc" : "noir";
         ennemi = (mycolour == NOIR) ? "blanc" : "noir";
         plateau = new EscampeBoard();
+        first = true;
         initAlgo();
     }
     
@@ -53,6 +55,15 @@ public class Alpha implements IJoueur {
 	@Override
 	public String choixMouvement() {
         String coup = algo.meilleurCoup(plateau);
+
+        
+        if (first){
+            String coups[] = plateau.possiblesMoves(moi);
+            coup = coups[new Random().nextInt(coups.length)];
+            first = false;
+        }
+            
+
         plateau.play(coup, moi);
         return coup;
 	}

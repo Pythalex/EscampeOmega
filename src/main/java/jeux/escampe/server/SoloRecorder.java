@@ -169,7 +169,7 @@ public class SoloRecorder {
 
             if (nbCoups == 2) { // Dans Escampe le joueur Blanc rejoue après avoir posé ses pièces
     			// On avertit le joueur Noir du placement des pièces
-    			joueurNoir.mouvementEnnemi(coup);
+                joueurNoir.mouvementEnnemi(coup);
     		}
     		else {
     			if (joueurCourant.getNumJoueur() == BLANC)
@@ -260,8 +260,10 @@ public class SoloRecorder {
             
             result = gameLoop(joueurBlanc, joueurNoir, arbitre);
 
+            System.out.println(result + " gagne");
+            
             int timeFailed = 0;
-            while (!write_match_result((result == 1 ? joueurNoir : joueurBlanc), (result == 1 ? joueurBlanc : joueurNoir))){
+            while (!write_match_result((result == NOIR ? joueurNoir : joueurBlanc), (result == 1 ? joueurBlanc : joueurNoir))){
                 System.err.println("Erreur lors de l'écriture dans la BDD. Attente avant nouvel essai (" + 3000 + 3000 * timeFailed + " ms) ...");
                 try {
                     Thread.sleep(3000 + 3000 * timeFailed);
