@@ -1,6 +1,7 @@
 package jeux.escampe;
 
 import java.util.List;
+import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -199,8 +200,6 @@ public class EscampeBoard implements PlateauClonable {
         for (int i = licorne_blanche; i < 12; i++){
             int y = pions[i*2];
             int x = pions[i*2+1];
-            if (y == -1 || x == -1)
-                System.out.println("HEHEHE");
             if ((i < licorne_noire && isjb || i >= licorne_noire) && cases_liseres[y][x] == derniereaction || derniereaction == null){
                 Lisere from = cases_liseres[y][x];
                 String base = CaseCoder.encode(x, y) + "-";
@@ -400,7 +399,13 @@ public class EscampeBoard implements PlateauClonable {
                     throw new IllegalArgumentException("'move' " + move + " doesn't match with any known move type.");
             }
         } catch (IllegalMove e){
-            System.err.println("Got IllegalMove error : " + e);
+            // System.err.println("Got IllegalMove error : " + e);
+            // System.err.println(this);
+            // System.err.println(player);
+            // Scanner sc = new Scanner(System.in);
+            // sc.nextLine();
+            // sc.close();
+            // System.err.println("ok");
         }
     }
 

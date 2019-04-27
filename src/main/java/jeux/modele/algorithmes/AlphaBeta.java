@@ -134,8 +134,9 @@ public class AlphaBeta implements AlgoJeu {
             String j = PlayerMax;
 
             for (String c : n.possiblesMoves(j)) {
-                System.err.println("Coup : " + c);
+                //System.err.println("Coup : " + c);
                 pbis = n.copy();
+                //System.err.println("Coup : " + c + " | maxMin | Joueur : " + PlayerMax);
                 pbis.play(c, j);
 
                 alpha = Integer.max(alpha, minMax(pbis, alpha, beta));
@@ -169,8 +170,9 @@ public class AlphaBeta implements AlgoJeu {
             String j = PlayerMin;
 
             for (String c : n.possiblesMoves(j)) {
-                System.err.println("Coup : " + c);
+                //System.err.println("Coup : " + c);
                 pbis = n.copy();
+                //System.err.println("Coup : " + c + " | minMax | Joueur : " + PlayerMax);
                 pbis.play(c, j);
 
                 beta = Integer.min(beta, maxMin(pbis, alpha, beta));
