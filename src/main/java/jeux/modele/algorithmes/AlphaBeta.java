@@ -78,11 +78,12 @@ public class AlphaBeta implements AlgoJeu {
         profondeurCourante = 0;
 
         List<String> possiblesMoves = Arrays.stream(p.possiblesMoves(PlayerMax)).collect(Collectors.toList());
+        System.out.println("Nombre de coups : " + possiblesMoves.size());
 
         PlateauClonable pbis = p.copy();
 
         String coupMax = possiblesMoves.get(0);
-        pbis.play(PlayerMax, coupMax);
+        pbis.play(coupMax, PlayerMax);
         int max = Integer.MIN_VALUE;
 
         max = minMax(pbis, max, Integer.MAX_VALUE);
@@ -98,8 +99,9 @@ public class AlphaBeta implements AlgoJeu {
             }
         }
 
-        // System.out.println("Nombre de feuilles visitées : " + nbfeuilles);
-        // System.out.println("Nombre de noeuds visitées : " + nbnoeuds);
+        System.out.println("Nombre de feuilles visitées : " + nbfeuilles);
+        System.out.println("Nombre de noeuds visitées : " + nbnoeuds);
+        System.exit(1);
         return coupMax;
     }
 
@@ -125,6 +127,7 @@ public class AlphaBeta implements AlgoJeu {
             nbfeuilles++;
 
             profondeurCourante--;
+            //System.out.println("Feuille à profondeur " + (profondeurCourante));
             
             return h.eval(n, PlayerMax);
         } else {
@@ -132,8 +135,12 @@ public class AlphaBeta implements AlgoJeu {
 
             PlateauClonable pbis;
             String j = PlayerMax;
+            String[] coups = n.possiblesMoves(j);
+            System.out.println("Coups : ");
+            System.out.println(Arrays.toString(coups));
+            System.out.println("\n\n=================\n\n");
 
-            for (String c : n.possiblesMoves(j)) {
+            for (String c : coups) {
                 //System.err.println("Coup : " + c);
                 pbis = n.copy();
                 //System.err.println("Coup : " + c + " | maxMin | Joueur : " + PlayerMax);
@@ -142,6 +149,7 @@ public class AlphaBeta implements AlgoJeu {
                 alpha = Integer.max(alpha, minMax(pbis, alpha, beta));
 
                 if (alpha >= beta) {
+                    profondeurCourante--;
                     return beta;
                 }
             }
@@ -161,6 +169,8 @@ public class AlphaBeta implements AlgoJeu {
         if (profondeurCourante >= profMax) {
             nbfeuilles++;
 
+            //System.out.println("Feuille à profondeur " + (profondeurCourante));
+
             profondeurCourante--;
             return h.eval(n, PlayerMin);
         } else {
@@ -169,7 +179,11 @@ public class AlphaBeta implements AlgoJeu {
             PlateauClonable pbis;
             String j = PlayerMin;
 
-            for (String c : n.possiblesMoves(j)) {
+            String[] coups = n.possiblesMoves(j);
+            System.out.println("Coups : ");
+            System.out.println(Arrays.toString(coups));
+
+            for (String c : coups) {
                 //System.err.println("Coup : " + c);
                 pbis = n.copy();
                 //System.err.println("Coup : " + c + " | minMax | Joueur : " + PlayerMax);
@@ -178,6 +192,7 @@ public class AlphaBeta implements AlgoJeu {
                 beta = Integer.min(beta, maxMin(pbis, alpha, beta));
 
                 if (alpha >= beta) {
+                    profondeurCourante--;
                     return alpha;
                 }
             }
