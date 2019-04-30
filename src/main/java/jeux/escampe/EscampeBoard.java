@@ -524,36 +524,26 @@ public class EscampeBoard implements PlateauClonable {
             default:
                 return find(pion, from, to, walkedon, 3, jb);
         }
-
-        // Point2D d = to.sub(from);
-
-        // boolean found = false;
-        // if (d.x > 0 && !found){
-        //     found = canMoveTo(pion, new Point2D(from.x + 1, from.y), to) && canMoveTo(pion, from.x, from.y, 1, 0);
-        // }
-        // else if (d.x < 0 && !found){
-        //     found = canMoveTo(pion, new Point2D(from.x - 1, from.y), to) && canMoveTo(pion, from.x, from.y, -1, 0);
-        // }
-        // if (d.y > 0 && !found){
-        //     found = canMoveTo(pion, new Point2D(from.x, from.y + 1), to) && canMoveTo(pion, from.x, from.y, 0, 1);
-        // }
-        // else if (d.y < 0 && !found){
-        //     found = canMoveTo(pion, new Point2D(from.x, from.y - 1), to) && canMoveTo(pion, from.x, from.y, 0, -1);
-        // }
-        // return found;
     }
 
     public boolean find(int pion, Point2D from, Point2D to, List<Point2D> walkedon, int count, boolean jb){
 
+        // On ne repassera pas sur cette case
         walkedon.add(from);
+
+        // Si on arrive à la destination et qu'on a plus de pas à faire
         if (count == 0 && from.equals(to)){
+            // Si on arrive sur une case ennemie
             if (cases_pions[from.y][from.x] != case_libre){
-                if (cases_pions[from.y][from.x] == licorne_noire && jb) {
+                // Si on arrive avec un paladin blanc sur la licorne noire
+                if (cases_pions[from.y][from.x] == licorne_noire && jb && pion != licorne_blanche) {
                     return true;
                 }
-                else if (cases_pions[from.y][from.x] == licorne_blanche && !jb) {
+                // Si on arrive avec un paladin noir sur la licorne blanche
+                else if (cases_pions[from.y][from.x] == licorne_blanche && !jb && pion != licorne_noire) {
                     return true;
                 }
+                // On a pas le droit
                 else {
                     return false;
                 }
@@ -561,16 +551,18 @@ public class EscampeBoard implements PlateauClonable {
                 return true;
             }
         }
+        // Si la distance restante à parcourir excède nos pas restants
         else if (from.manhattan_distance(to) > count){
             return false;
         }
+        // On continue le chemin
         else {
-
             // cas == pion -> on a pas encore bougé
             if (cases_pions[from.y][from.x] != case_libre && cases_pions[from.y][from.x] != pion){
                 return false;
             }
 
+            // On teste les cases voisines en cherchant un chemin qui passe par elles
             Point2D nexthop = new Point2D(from.x + 1, from.y);
             if (from.x + 1 < width && !walkedon.contains(nexthop)){
                 if (find(pion, nexthop, to, walkedon, count - 1, jb))
