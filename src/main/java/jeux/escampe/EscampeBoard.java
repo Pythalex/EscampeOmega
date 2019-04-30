@@ -170,7 +170,6 @@ public class EscampeBoard implements PlateauClonable {
         return canMoveTo(move.pion, move.to);
     }
 
-    // TODO y'a un bug ici
     public boolean isValidMove(Positioning pos, String player) {
         int i;
         boolean taken[] = new boolean[36];
@@ -196,13 +195,12 @@ public class EscampeBoard implements PlateauClonable {
         }
     }
 
-    // TODO : possiblesmoves ne renvoie pas tous les coups possibles
+    // TODO autoriser n'importe quel sens pour le joueur noir en début de placement
     @Override
     public String[] possiblesMoves(String player) {
 
         if (gameOver()) {
             String[] res = {"E"};
-            System.out.println("Je suis gameover " + player);
             return res;
         }
 
@@ -425,7 +423,6 @@ public class EscampeBoard implements PlateauClonable {
                     }
                     break;
                 case Skip:
-                    derniereaction = null;
                     break;
                 default:
                     throw new IllegalArgumentException("'move' " + move + " doesn't match with any known move type.");

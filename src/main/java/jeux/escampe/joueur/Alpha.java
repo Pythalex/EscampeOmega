@@ -19,8 +19,9 @@ public class Alpha implements IJoueur {
 
     // IA
     protected Heuristique h = new HAlpha();
-    protected AlgoJeu algo;
-    protected final int profmax = 5;
+    protected AlphaBeta algo;
+    protected int profmaxPlacement = 2;
+    protected int profmax = 7;
 
     // infos sur sa couleur
     protected String moi; // blanc/noir
@@ -44,7 +45,7 @@ public class Alpha implements IJoueur {
     }
     
     public void initAlgo(){
-        algo = new AlphaBeta(h, moi, ennemi, profmax);
+        algo = new AlphaBeta(h, moi, ennemi, profmaxPlacement);
     }
 
 	@Override
@@ -54,16 +55,18 @@ public class Alpha implements IJoueur {
 
 	@Override
 	public String choixMouvement() {
-        String coup = algo.meilleurCoup(plateau);
 
-        
+        String coup;
+
         if (first){
             String coups[] = plateau.possiblesMoves(moi);
             coup = coups[new Random().nextInt(coups.length)];
             first = false;
+            algo.profMax = profmax;
+        } else {
+            coup = algo.meilleurCoup(plateau);
         }
             
-
         plateau.play(coup, moi);
         return coup;
 	}

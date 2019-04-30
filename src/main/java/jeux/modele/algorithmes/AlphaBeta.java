@@ -17,7 +17,7 @@ public class AlphaBeta implements AlgoJeu {
     /**
      * La profondeur de recherche par défaut
      */
-    private final static int PROFMAXDEFAUT = 8;
+    private static int PROFMAXDEFAUT = 8;
 
     // -------------------------------------------
     // Attributs
@@ -26,7 +26,7 @@ public class AlphaBeta implements AlgoJeu {
     /**
      * La profondeur de recherche utilisée pour l'algorithme
      */
-    private int profMax = PROFMAXDEFAUT;
+    public int profMax = PROFMAXDEFAUT;
 
     /**
      * L'heuristique utilisée par l'algorithme
@@ -78,7 +78,7 @@ public class AlphaBeta implements AlgoJeu {
         profondeurCourante = 0;
 
         List<String> possiblesMoves = Arrays.stream(p.possiblesMoves(PlayerMax)).collect(Collectors.toList());
-        System.out.println("Nombre de coups : " + possiblesMoves.size());
+        //System.out.println("Nombre de coups : " + possiblesMoves.size());
 
         PlateauClonable pbis = p.copy();
 
@@ -99,9 +99,8 @@ public class AlphaBeta implements AlgoJeu {
             }
         }
 
-        System.out.println("Nombre de feuilles visitées : " + nbfeuilles);
-        System.out.println("Nombre de noeuds visitées : " + nbnoeuds);
-        System.exit(1);
+        // System.out.println("Nombre de feuilles visitées : " + nbfeuilles);
+        // System.out.println("Nombre de noeuds visitées : " + nbnoeuds);
         return coupMax;
     }
 
@@ -136,9 +135,9 @@ public class AlphaBeta implements AlgoJeu {
             PlateauClonable pbis;
             String j = PlayerMax;
             String[] coups = n.possiblesMoves(j);
-            System.out.println("Coups : ");
-            System.out.println(Arrays.toString(coups));
-            System.out.println("\n\n=================\n\n");
+            // System.out.println("Coups : ");
+            // System.out.println(Arrays.toString(coups));
+            // System.out.println("\n\n=================\n\n");
 
             for (String c : coups) {
                 //System.err.println("Coup : " + c);
@@ -180,8 +179,8 @@ public class AlphaBeta implements AlgoJeu {
             String j = PlayerMin;
 
             String[] coups = n.possiblesMoves(j);
-            System.out.println("Coups : ");
-            System.out.println(Arrays.toString(coups));
+            // System.out.println("Coups : ");
+            // System.out.println(Arrays.toString(coups));
 
             for (String c : coups) {
                 //System.err.println("Coup : " + c);

@@ -15,6 +15,9 @@ import jeux.escampe.joueur.heuristiques.HGamma;
 
 public class Gamma extends Alpha {
 
+    protected int profmaxPlacement = 3;
+    protected int profmax = 10;
+
     protected Heuristique h = new HGamma();
 
 	@Override

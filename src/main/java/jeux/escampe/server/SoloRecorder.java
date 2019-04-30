@@ -7,9 +7,13 @@ import javax.swing.JFrame;
 
 import jeux.modele.IArbitre;
 import jeux.modele.IJoueur;
+import jeux.escampe.EscampeBoard;
 import jeux.escampe.gui.Applet;
 import jeux.escampe.joueur.Arbitre;
+import jeux.escampe.joueur.Gamma;
 import jeux.escampe.joueur.JoueurAleatoire;
+
+import java.sql.Timestamp;
 
 /**
  * Petite Classe toute simple qui vous montre comment on peut lancer une partie sur deux IJoueurs...
@@ -50,6 +54,8 @@ public class SoloRecorder {
     static int buffermax = 512;
     static int filled = 0;
     static String buffer[][] = new String[buffermax][2];
+
+    public final static int TIMEOUT = 2;
     
     
     /**
@@ -64,7 +70,7 @@ public class SoloRecorder {
     private static IJoueur getDefaultPlayer(String s) {
     	System.out.println(s + " : defaultPlayer");
     	// vous devez faire qq chose comme return new MonMeilleurJoueur();
-    	return new JoueurAleatoire();
+    	return new Gamma();
     }
     
     /**
@@ -123,20 +129,27 @@ public class SoloRecorder {
      */
     public static int gameLoop(IJoueur joueurBlanc, IJoueur joueurNoir, IArbitre arbitre) {
     	String coup;
-    	IJoueur joueurCourant = joueurNoir; // Dans Escampe le joueur Noir commence
-    	
+        IJoueur joueurCourant = joueurNoir; // Dans Escampe le joueur Noir commence
+        
+        nbCoups = 0;
+
     	while (true) {
 
             if (arbitre.GameOver()){
                 break;
             }
 
+            if (nbCoups > 150){ // cycle
+                return 2;
+            }
+
     		nbCoups++;
-    		
-    		//System.out.println("\n*********\nOn demande à " + joueurCourant.binoName() + " (" + joueurCourant.getNumJoueur() + ") de jouer...");
+            
+    		// System.out.println("\n*********\n[" + new Timestamp(System.currentTimeMillis()) + "]On demande à " + joueurCourant.binoName() + " (" + joueurCourant.getNumJoueur() + ") de jouer...");
     		long waitingTime1 = new Date().getTime();
     		
-			coup = joueurCourant.choixMouvement();
+            coup = joueurCourant.choixMouvement();
+        
 			String[] coupSplit;
 
 			if(coup.length() == 17){
@@ -163,7 +176,7 @@ public class SoloRecorder {
     		long waitingTime2 = new Date().getTime();
     		// On rajoute 1 pour eliminer les temps infinis
     		long waitingTime = waitingTime2 - waitingTime1 + 1;
-            //System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
+            // System.out.println("Le joueur " + joueurCourant.binoName() + " a joué le coup " + coup + " en " + waitingTime + "s.");
             
             arbitre.play(joueurCourant.getNumJoueur(), coup);
 
@@ -241,7 +254,7 @@ public class SoloRecorder {
     		joueurNoir = loadNamedPlayer(args[1], "Noir");
     	}
 
-        int times = 1;
+        int times = 1000;
         if (args.length > 2)
             times = Integer.parseInt(args[2]);
 
@@ -260,18 +273,23 @@ public class SoloRecorder {
             
             result = gameLoop(joueurBlanc, joueurNoir, arbitre);
 
-            System.out.println(result + " gagne");
+            if (result == 2){
+                System.out.println("timeout");
+            } else {
+                System.out.println(result + " gagne");
             
-            int timeFailed = 0;
-            while (!write_match_result((result == NOIR ? joueurNoir : joueurBlanc), (result == 1 ? joueurBlanc : joueurNoir))){
-                System.err.println("Erreur lors de l'écriture dans la BDD. Attente avant nouvel essai (" + 3000 + 3000 * timeFailed + " ms) ...");
-                try {
-                    Thread.sleep(3000 + 3000 * timeFailed);
-                } catch(Exception e){
-                    e.printStackTrace();
+                int timeFailed = 0;
+                while (!write_match_result((result == NOIR ? joueurNoir : joueurBlanc), (result == 1 ? joueurBlanc : joueurNoir))){
+                    System.err.println("Erreur lors de l'écriture dans la BDD. Attente avant nouvel essai (" + 3000 + 3000 * timeFailed + " ms) ...");
+                    try {
+                        Thread.sleep(3000 + 3000 * timeFailed);
+                    } catch(Exception e){
+                        e.printStackTrace();
+                    }
+                    timeFailed++;
                 }
-                timeFailed++;
             }
+
         }
 
         flush_writer();
