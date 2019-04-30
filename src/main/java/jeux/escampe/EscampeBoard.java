@@ -51,6 +51,7 @@ public class EscampeBoard implements PlateauClonable {
     public boolean placementfait = false;
     public boolean placementBlanc = false;
     public boolean placementNoir = false;
+    public boolean haut; // "le premier placement s'est-il fait en haut du plateau ?"
 
     public EscampeBoard() {
 
@@ -174,25 +175,29 @@ public class EscampeBoard implements PlateauClonable {
         int i;
         boolean taken[] = new boolean[36];
 
-        if (isJoueurBlanc(player)){
+        int y = pos.positions.get(0).y;
+
+        if (y == 0 || y == 1){
             for (Point2D p: pos.positions){
                 i = p.y * width + p.x;
-                if (p.y > -1 && p.y < 2 && !taken[i])
+                if (!taken[i] && (p.y == 0 || p.y == 1))
                     taken[i] = true;
                 else
                     return false;
             }
-            return true;
+        } else if (y == 4 || y == 5){
+            for (Point2D p: pos.positions){
+                i = p.y * width + p.x;
+                if (!taken[i] && (p.y == 4 || p.y == 5))
+                    taken[i] = true;
+                else
+                    return false;
+            }
         } else {
-            for (Point2D p: pos.positions){
-                i = p.y * width + p.x;
-                if (p.y > 3 && p.y < 6 && !taken[i])
-                    taken[i] = true;
-                else
-                    return false;
-            }
-            return true;
+            return false;
         }
+        
+        return true;
     }
 
     // TODO autoriser n'importe quel sens pour le joueur noir en début de placement
@@ -205,7 +210,7 @@ public class EscampeBoard implements PlateauClonable {
         }
 
         if (!placementfait){
-            return placements(player);
+            return placements();
         }
 
         boolean isjb = isJoueurBlanc(player);
@@ -351,8 +356,8 @@ public class EscampeBoard implements PlateauClonable {
         return output;
     }
 
-    public String[] placements(String joueur){
-        String res[] = new String[5544]; // (6 parmi 12) * 6
+    public String[] placements(){
+        String res[] = new String[5544 * (placementNoir ? 1 : 2)]; // ((6 parmi 12) * 6) * 2
 
         int c = 0;
         // pour chaque choix de 6 parmi 12 cases
@@ -367,8 +372,15 @@ public class EscampeBoard implements PlateauClonable {
                                         if (p4 != l && p4 != p1 && p4 != p2 && p4 != p3){
                                             for (int p5 = p4 + 1; p5 < 12; p5++){ // paladin 5
                                                 if (p5 != l && p5 != p1 && p5 != p2 && p5 != p3 && p5 != p4){
-                                                    res[c] = encodePlacement(l, p1, p2, p3, p4, p5, joueur);
-                                                    c++;
+                                                    // Si le noir s'est déjà placé, on donne les placements en bas et vice versa
+                                                    if (placementNoir){
+                                                        res[c] = encodePlacement(l, p1, p2, p3, p4, p5, !haut);
+                                                        c++;
+                                                    } else {
+                                                        res[c] = encodePlacement(l, p1, p2, p3, p4, p5, true);
+                                                        res[c+1] = encodePlacement(l, p1, p2, p3, p4, p5, true);
+                                                        c += 2;
+                                                    }
                                                 }
                                             }
                                         }
@@ -384,8 +396,8 @@ public class EscampeBoard implements PlateauClonable {
         return res;
     }
 
-    public String encodePlacement(int l, int p1, int p2, int p3, int p4, int p5, String joueur){
-        int base = isJoueurBlanc(joueur) ? 0 : 4;
+    public String encodePlacement(int l, int p1, int p2, int p3, int p4, int p5, boolean haut){
+        int base = haut ? 0 : 4;
         return  CaseCoder.encode( l % width, base +  l / width) + "/" +
                 CaseCoder.encode(p1 % width, base + p1 / width) + "/" +
                 CaseCoder.encode(p2 % width, base + p2 / width) + "/" +
@@ -410,10 +422,12 @@ public class EscampeBoard implements PlateauClonable {
                 case Positioning:
                     Positioning pos = interpretPositioning(move);
                     if (isValidMove(pos, player)){
-                        if (isJoueurBlanc(player))
+                        if (isJoueurBlanc(player)){
                             placementBlanc = true;
-                        else
+                        } else {
                             placementNoir = true;
+                            haut = (pos.positions.get(0).y == 0 || pos.positions.get(0).y == 1);
+                        } 
                         if (placementBlanc && placementNoir)
                             placementfait = true;
 

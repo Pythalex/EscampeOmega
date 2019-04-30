@@ -210,8 +210,8 @@ public class Solo {
     	System.out.println("Partie solo ...");
     	
     	if (args.length == 0) { // On a deux classes à charger
-    		joueurBlanc = loadNamedPlayer("jeux.escampe.joueur.Alpha", "Blanc");
-    		joueurNoir = loadNamedPlayer("jeux.escampe.joueur.Alpha", "Noir");
+    		joueurBlanc = loadNamedPlayer("jeux.escampe.joueur.Gamma", "Blanc");
+    		joueurNoir = loadNamedPlayer("jeux.escampe.joueur.Gamma", "Noir");
     	}
     	else if (args.length == 1) {
     		joueurBlanc = loadNamedPlayer(args[0], "Blanc");
