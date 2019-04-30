@@ -62,6 +62,19 @@ public class EscampeBoard implements PlateauClonable {
         Arrays.fill(pions, -1);
     }
 
+    public EscampeBoard(EscampeBoard other) {
+        this.pions = other.pions.clone();
+
+        for (int i = 0; i < cases_pions.length; i++){
+            this.cases_pions[i] = other.cases_pions[i].clone();
+        }
+        
+        this.placementBlanc = other.placementBlanc;
+        this.placementNoir = other.placementNoir;
+        this.placementfait = other.placementfait;
+        this.derniereaction = other.derniereaction;
+    }
+
     // public EscampeBoard(List<Point2D> positions) {
     //     if (positions == null) {
     //         throw new NullPointerException("La liste des positions ne doit pas être nulle");
@@ -483,15 +496,6 @@ public class EscampeBoard implements PlateauClonable {
     @Override
     public boolean gameOver() {
         return placementfait && (pions[0] == -1 && pions[1] == -1 || pions[12] == -1 && pions[13] == -1);
-    }
-
-    public EscampeBoard(EscampeBoard other) {
-        this.pions = other.pions.clone();
-        this.cases_pions = other.cases_pions.clone();
-        this.placementBlanc = other.placementBlanc;
-        this.placementNoir = other.placementNoir;
-        this.placementfait = other.placementfait;
-        this.derniereaction = other.derniereaction;
     }
 
     @Override

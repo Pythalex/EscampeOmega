@@ -287,13 +287,22 @@ public class PlateauEscampeTest {
         EscampeBoard p3 = p.copy();
 
         p1.play("A1-A2", "blanc");
-        String[] coups = {"B5-A3", "B5-D4", "B5-B2", "B5-C3", "B5-D6", "D5-B4", "D5-C3", "D5-D2", "D5-B6", "D5-F6", "D5-E3", "D5-F4"};
-        List<String> coupsp1 = Arrays.stream(coups).collect(Collectors.toList());;
+        String[] coups1 = {"B5-A3", "B5-D4", "B5-B2", "B5-C3", "B5-D6", "D5-B4", "D5-C3", "D5-D2", "D5-B6", "D5-F6", "D5-E3", "D5-F4"};
+        List<String> coupsp1 = Arrays.stream(coups1).collect(Collectors.toList());;
         List<String> possiblesMoves = Arrays.stream(p1.possiblesMoves("noir")).collect(Collectors.toList());
-
-        System.out.println(Arrays.toString(coupsp1.toArray()));
-        System.out.println(Arrays.toString(possiblesMoves.toArray()));
         Assert.assertTrue(coupsp1.containsAll(possiblesMoves) && possiblesMoves.containsAll(coupsp1));
+
+        p2.play("D1-C3", "blanc");
+        String[] coups2 = {"A5-A6", "A5-A4", "C5-C6", "C5-C4", "E5-E6", "E5-E4"};
+        List<String> coupsp2 = Arrays.stream(coups2).collect(Collectors.toList());;
+        possiblesMoves = Arrays.stream(p2.possiblesMoves("noir")).collect(Collectors.toList());
+        Assert.assertTrue(coupsp2.containsAll(possiblesMoves) && possiblesMoves.containsAll(coupsp2));
+
+        p3.play("D1-F2", "blanc");
+        String[] coups3 = {"F5-F3", "F5-E4", "F5-E6"};
+        List<String> coupsp3 = Arrays.stream(coups3).collect(Collectors.toList());;
+        possiblesMoves = Arrays.stream(p3.possiblesMoves("noir")).collect(Collectors.toList());
+        Assert.assertTrue(coupsp3.containsAll(possiblesMoves) && possiblesMoves.containsAll(coupsp3));
     }
 
     public static boolean sameContent(String[] a1, String[] a2){
