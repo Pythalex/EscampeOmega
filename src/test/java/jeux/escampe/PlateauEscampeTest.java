@@ -3,6 +3,7 @@ package jeux.escampe;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -277,6 +278,22 @@ public class PlateauEscampeTest {
 
         String[] moves = {"A1-A2", "B1-B3", "B1-A2", "B1-C2", "C1-C3", "C1-B2", "C1-D2", "D1-D4", "D1-B2", "D1-F2", "D1-C3", "D1-E3", "E1-E2", "F1-F3", "F1-E2"};
         Assert.assertTrue(sameContent(plateau.possiblesMoves("blanc"), moves));
+
+        EscampeBoard p = new EscampeBoard();
+        p.play("A5/B5/C5/D5/E5/F5", "noir");
+        p.play("A1/B1/C1/D1/E1/F1", "blanc");
+        EscampeBoard p1 = p.copy();
+        EscampeBoard p2 = p.copy();
+        EscampeBoard p3 = p.copy();
+
+        p1.play("A1-A2", "blanc");
+        String[] coups = {"B5-A3", "B5-D4", "B5-B2", "B5-C3", "B5-D6", "D5-B4", "D5-C3", "D5-D2", "D5-B6", "D5-F6", "D5-E3", "D5-F4"};
+        List<String> coupsp1 = Arrays.stream(coups).collect(Collectors.toList());;
+        List<String> possiblesMoves = Arrays.stream(p1.possiblesMoves("noir")).collect(Collectors.toList());
+
+        System.out.println(Arrays.toString(coupsp1.toArray()));
+        System.out.println(Arrays.toString(possiblesMoves.toArray()));
+        Assert.assertTrue(coupsp1.containsAll(possiblesMoves) && possiblesMoves.containsAll(coupsp1));
     }
 
     public static boolean sameContent(String[] a1, String[] a2){

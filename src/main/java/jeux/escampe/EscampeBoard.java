@@ -117,6 +117,7 @@ public class EscampeBoard implements PlateauClonable {
         boolean isjb = isJoueurBlanc(player);
         boolean isjn = isJoueurNoir(player);
 
+        // Si le joueur tente de bouger un pion ennemi
         if (isjb) {
             if (move.pion > 5) {
                 return false;
@@ -182,11 +183,13 @@ public class EscampeBoard implements PlateauClonable {
         }
     }
 
+    // TODO : possiblesmoves ne renvoie pas tous les coups possibles
     @Override
     public String[] possiblesMoves(String player) {
 
         if (gameOver()) {
             String[] res = {"E"};
+            System.out.println("Je suis gameover " + player);
             return res;
         }
 
@@ -200,8 +203,8 @@ public class EscampeBoard implements PlateauClonable {
         for (int i = licorne_blanche; i < 12; i++){
             int y = pions[i*2];
             int x = pions[i*2+1];
-            if ((i < licorne_noire && isjb || i >= licorne_noire) && cases_liseres[y][x] == derniereaction || derniereaction == null){
-                Lisere from = cases_liseres[y][x];
+            Lisere from = cases_liseres[y][x];
+            if ((i < licorne_noire && isjb || i >= licorne_noire) && (from == derniereaction || derniereaction == null)){
                 String base = CaseCoder.encode(x, y) + "-";
                 switch (from){
                     case SIMPLE:
@@ -257,6 +260,22 @@ public class EscampeBoard implements PlateauClonable {
                         } catch (IllegalArgumentException e){}
                         break;
                     case TRIPLE:
+                        try {
+                            move = base + CaseCoder.encode(x + 1, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x - 1, y);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y + 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
+                        try {
+                            move = base + CaseCoder.encode(x, y - 1);
+                            if (isValidMove(move, player)) res.add(move);
+                        } catch (IllegalArgumentException e){}
                         try {
                             move = base + CaseCoder.encode(x, y - 3);
                             if (isValidMove(move, player)) res.add(move);
@@ -373,6 +392,7 @@ public class EscampeBoard implements PlateauClonable {
                     if (isValidMove(mv, player)){
                         move(mv);
                         derniereaction = cases_liseres[mv.to.y][mv.to.x];
+                        System.out.println("Dernière action : " + derniereaction);
                     } else {
                         throw new IllegalMove("'move' " + move + " is invalid.");
                     }
@@ -468,6 +488,10 @@ public class EscampeBoard implements PlateauClonable {
     public EscampeBoard(EscampeBoard other) {
         this.pions = other.pions.clone();
         this.cases_pions = other.cases_pions.clone();
+        this.placementBlanc = other.placementBlanc;
+        this.placementNoir = other.placementNoir;
+        this.placementfait = other.placementfait;
+        this.derniereaction = other.derniereaction;
     }
 
     @Override
