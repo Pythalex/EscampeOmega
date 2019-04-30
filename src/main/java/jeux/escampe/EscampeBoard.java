@@ -405,7 +405,6 @@ public class EscampeBoard implements PlateauClonable {
                     if (isValidMove(mv, player)){
                         move(mv);
                         derniereaction = cases_liseres[mv.to.y][mv.to.x];
-                        System.out.println("Dernière action : " + derniereaction);
                     } else {
                         throw new IllegalMove("'move' " + move + " is invalid.");
                     }
